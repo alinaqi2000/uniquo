@@ -14,6 +14,7 @@ import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import colors from "../../../config/colors";
 import { Pressable } from "react-native";
 import UserAvatar from "../images/UserAvatar";
+import { Competition } from "../../../models/Competition";
 
 interface PressableProps extends IPressableProps {
   icon?: string;
@@ -25,8 +26,10 @@ const colorCombinations = [
   "#02D8CB",
   "#940009",
 ];
-
-export default function CompetitionItem(props: PressableProps) {
+interface Props extends PressableProps {
+  competition: Competition;
+}
+export default function CompetitionItem(props: Props) {
   const randomNo = Math.ceil(
     (Math.random() * 100 * colorCombinations.length) % colorCombinations.length
   );
@@ -50,27 +53,42 @@ export default function CompetitionItem(props: PressableProps) {
               <Text
                 color={colors.primaryTextColor}
                 fontWeight="semibold"
-                fontSize={"xl"}
+                fontSize={"lg"}
               >
-                #knowledge-competition
+                #{props.competition.slug}
               </Text>
-              <Icon
-                as={MaterialIcons}
-                name="more-vert"
-                size={"lg"}
-                color={colors.primaryTextColor}
-              />
+              <Pressable>
+                <Icon
+                  as={MaterialIcons}
+                  name="more-vert"
+                  size={"md"}
+                  color={colors.primaryTextColor}
+                />
+              </Pressable>
             </HStack>
-            <HStack space={2} ml={1}>
-              <Icon
-                as={MaterialIcons}
-                name="people"
-                size={"lg"}
-                color={colors.primaryTextColor}
-              />
-              <Text color={colors.primaryTextColor} fontSize={"md"}>
-                10,878 participants
-              </Text>
+            <HStack ml={1} space={4}>
+              <HStack space={2}>
+                <Icon
+                  as={MaterialIcons}
+                  name="people"
+                  size={"sm"}
+                  color={colors.primaryTextColor}
+                />
+                <Text color={colors.primaryTextColor} fontSize={"xs"}>
+                  {props.competition.participations} participants
+                </Text>
+              </HStack>
+              <HStack space={2}>
+                <Icon
+                  as={Ionicons}
+                  name="card"
+                  size={"sm"}
+                  color={colors.primaryTextColor}
+                />
+                <Text color={colors.primaryTextColor} fontSize={"xs"}>
+                  Rs.{props.competition.prize_money}
+                </Text>
+              </HStack>
             </HStack>
           </Box>
           <Box>
@@ -83,7 +101,7 @@ export default function CompetitionItem(props: PressableProps) {
                 <UserAvatar
                   size={"sm"}
                   alt="AN"
-                  uri="https://images.wsj.net/im-122682/?width=860&height=573"
+                  uri={props.competition.organizer.avatar}
                   shadow={"5"}
                   borderColor={colors.primaryTextColor}
                 />
@@ -92,22 +110,22 @@ export default function CompetitionItem(props: PressableProps) {
                   fontWeight="semibold"
                   fontSize={"md"}
                 >
-                  ali.naqi
+                  {props.competition.organizer.username}
                 </Text>
               </HStack>
               <HStack space={2} ml={1} justifyContent="center">
                 <Icon
                   as={Ionicons}
                   name="calendar"
-                  size={"md"}
+                  size={"sm"}
                   color={colors.primaryTextColor}
                 />
                 <Text
                   color={colors.primaryTextColor}
                   fontWeight="semibold"
-                  fontSize={"md"}
+                  fontSize={"sm"}
                 >
-                  Oct 13, 2021
+                  {props.competition.voting_start_at}
                 </Text>
               </HStack>
             </HStack>

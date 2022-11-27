@@ -13,6 +13,7 @@ export default function PrimaryIconButton(props: ButtonProps) {
       backgroundColor={colors.primaryColor}
       variant="subtle"
       endIcon={<Icon as={Ionicons} name={props.icon} size="lg" />}
+      borderRadius="lg"
       {...props}
     >
       {props.title}

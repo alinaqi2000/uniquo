@@ -1,22 +1,21 @@
-import React, { useEffect, useCallback } from "react";
-import {
-  NativeBaseProvider,
-  extendTheme,
-  StatusBar,
-  KeyboardAvoidingView,
-} from "native-base";
+import React, { useEffect, useCallback, useState } from "react";
+import { NativeBaseProvider, extendTheme } from "native-base";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { Provider } from "react-redux";
 import { store } from "./app/store";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import NotificationTokenProvider from "./app/components/hoc/NotificationTokenProvider";
 import Main from "./app/components/core/Main";
-import colors from "./app/config/colors";
-import { Platform, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import { themeConfig } from "./app/config/themeConfig";
-const Stack = createNativeStackNavigator();
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+// if (__DEV__) {
+//   import("./ReactotronConfig").then(() =>
+//     console.log("Reactotron Configured")
+//   );
+// }
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -26,12 +25,22 @@ export default function App() {
     "Rubik-Italic": require("./assets/fonts/Rubik/static/Rubik-Italic.ttf"),
     "Rubik-Medium": require("./assets/fonts/Rubik/static/Rubik-Medium.ttf"),
   });
-
+  const [firstTime, setFirstTime] = useState(true);
   useEffect(() => {
     async function prepare() {
       await SplashScreen.preventAutoHideAsync();
     }
     prepare();
+  }, []);
+  useEffect(() => {
+    async function get() {
+      try {
+        const jsonValue = await AsyncStorage.getItem("firstTime");
+        if (JSON.parse(jsonValue) == "no") setFirstTime(false);
+        else setFirstTime(true);
+      } catch (e) {}
+    }
+    get();
   }, []);
 
   const onLayoutRootView = useCallback(async () => {
@@ -55,10 +64,8 @@ export default function App() {
               style={styles.droidSafeArea}
               onLayout={onLayoutRootView}
             >
-              <StatusBar animated={true} backgroundColor={colors.primaryBg} />
               <NativeBaseProvider theme={theme}>
-               
-                  <Main token={expoPushToken} />
+                <Main token={expoPushToken} firstTime={firstTime} />
               </NativeBaseProvider>
             </SafeAreaView>
           </SafeAreaProvider>

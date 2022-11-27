@@ -12,6 +12,7 @@ export default function OutlineButton(props: ButtonProps) {
       _text={{
         color: colors.primaryTextColor,
       }}
+      borderRadius="lg"
       variant="outline"
       {...props}
     >

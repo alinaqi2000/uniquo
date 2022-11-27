@@ -6,6 +6,5 @@ export const navigationOptions = {
   headerStyle: {
     backgroundColor: colors.primaryBg,
   },
-  headerShown: false,
   headerBackButtonMenuEnabled: true,
 };

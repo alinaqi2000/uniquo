@@ -8,7 +8,12 @@ interface ButtonProps extends IButtonProps {
 }
 export default function SecondaryButton(props: ButtonProps) {
   return (
-    <Button backgroundColor={colors.secondaryColor} variant="subtle" {...props}>
+    <Button
+      borderRadius="lg"
+      backgroundColor={colors.secondaryColor}
+      variant="subtle"
+      {...props}
+    >
       {props.title}
     </Button>
   );

@@ -27,8 +27,67 @@ import SettingButton from "../utility/buttons/SettingButton";
 import CategoryItem from "../utility/ui/CategoryItem";
 import { FlatList } from "react-native";
 import CompetitionItem from "../utility/ui/CompetitionItem";
+import { Category } from "../../models/Category";
+import { User } from "../../models/User";
+import { Competition } from "../../models/Competition";
 
 export default function DevComponents() {
+  const categories = [
+    new Category(1, "Sports", "sports"),
+    new Category(2, "Art & Culture", "art-culture"),
+    new Category(3, "Memes", "memes"),
+    new Category(4, "Cars", "cars"),
+  ];
+  const compeitions = [
+    new Competition(
+      1,
+      false,
+      "Sargodha Cars Competition",
+      null,
+      "sargodha-cars-competition",
+      5000,
+      100,
+      5000,
+      500,
+      "Sep 16, 2022",
+      "16:01",
+      "Sep 16, 2022",
+      "06:14",
+      false,
+      new Category(1, "Cars", "cars"),
+      new User(
+        "Imran ",
+        "organizer.user@gmail.com",
+        "organizer.user",
+        "https://coursebari.com/wp-content/uploads/2021/06/899048ab0cc455154006fdb9676964b3.jpg"
+      ),
+      null
+    ),
+    new Competition(
+      2,
+      false,
+      "Sports Competition",
+      "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Repudiandae error natus perferendis voluptatum tempore commodi nihil. Dolorem cupiditate dolorum quam provident, nesciunt inventore suscipit veniam expedita temporibus perferendis vero autem.",
+      "sports-competition",
+      5000,
+      100,
+      5000,
+      500,
+      "Sep 24, 2022",
+      "17:00",
+      "Sep 28, 2022",
+      "17:00",
+      false,
+      new Category(1, "Cars", "cars"),
+      new User(
+        "Organizer User",
+        "organizer.user@gmail.com",
+        "organizer.user",
+        "https://coursebari.com/wp-content/uploads/2021/06/899048ab0cc455154006fdb9676964b3.jpg"
+      ),
+      null
+    ),
+  ];
   return (
     <VStack>
       <Heading fontSize={"3xl"} color="primary.500">
@@ -110,15 +169,15 @@ export default function DevComponents() {
           <Text>Category</Text>
           <FlatList
             horizontal={true}
-            data={[0, 1, 2]} // your array should go here
-            renderItem={({ item }) => <CategoryItem />}
+            data={categories} // your array should go here
+            renderItem={({ item }) => <CategoryItem category={item} />}
           />
         </VStack>
         <VStack justifyContent={"center"} space={1}>
           <Text>Competition</Text>
           <FlatList
-            data={[0, 1, 2]} // your array should go here
-            renderItem={({ item }) => <CompetitionItem />}
+            data={compeitions} // your array should go here
+            renderItem={({ item }) => <CompetitionItem competition={item} />}
           />
         </VStack>
       </VStack>

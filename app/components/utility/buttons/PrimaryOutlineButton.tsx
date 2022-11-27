@@ -8,7 +8,7 @@ interface ButtonProps extends IButtonProps {
 }
 export default function PrimaryOutlineButton(props: ButtonProps) {
   return (
-    <Button variant="outline" {...props}>
+    <Button borderRadius="lg" variant="outline" {...props}>
       {props.title}
     </Button>
   );

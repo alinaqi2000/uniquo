@@ -1,61 +1,25 @@
-import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { addToken } from "../../store/app/app.actions";
-import HomeScreen from "../../screens/dashboard/HomeScreen";
-import Onboarding01Screen from "../../screens/onboarding/Onboarding01Screen";
-import { navigationOptions } from "../../config/navigationOptions";
-import Onboarding02Screen from "../../screens/onboarding/Onboarding02Screen";
-import Onboarding03Screen from "../../screens/onboarding/Onboarding03Screen";
-import Components from "../../screens/utility/Components";
-
-const Stack = createNativeStackNavigator();
+import { addToken, setFirstTime } from "../../store/app/app.actions";
+import Navigation from "./Navigation";
 
 interface Props {
   token: string;
+  firstTime: boolean;
 }
-export default function Main({ token }: Props) {
+export default function Main({ token, firstTime }: Props) {
   const dispatch = useDispatch();
   useEffect(() => {
-    console.log("got Token ", token);
-
     dispatch(addToken(token));
   }, [token]);
 
+  useEffect(() => {
+    dispatch(setFirstTime(firstTime));
+  }, [firstTime]);
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{
-          animation: "slide_from_right",
-        }}
-      >
-        <Stack.Screen
-          name="Components"
-          component={Components}
-          options={navigationOptions}
-        />
-        <Stack.Screen
-          name="Onboarding01"
-          component={Onboarding01Screen}
-          options={navigationOptions}
-        />
-        <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Onboarding02"
-          component={Onboarding02Screen}
-          options={navigationOptions}
-        />
-        <Stack.Screen
-          name="Onboarding03"
-          component={Onboarding03Screen}
-          options={navigationOptions}
-        />
-      </Stack.Navigator>
+      <Navigation />
     </NavigationContainer>
   );
 }

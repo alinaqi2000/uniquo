@@ -1,6 +1,7 @@
-import { User } from "../../models/User";
+import { User } from "../../models/AuthUser";
 
 export const SET_USER = "SET_USER";
+export const SET_FIRST_TIME = "SET_FIRST_TIME";
 export const ADD_TOKEN = "ADD_TOKEN";
 export const DELETE_TOKEN = "DELETE_TOKEN";
 
@@ -8,6 +9,12 @@ type SetUser = { type: typeof SET_USER; payload: User };
 export const setUser = (user: User): SetUser => ({
   type: SET_USER,
   payload: user,
+});
+
+type SetFirstTime = { type: typeof SET_FIRST_TIME; payload: boolean };
+export const setFirstTime = (firstTime: boolean): SetFirstTime => ({
+  type: SET_FIRST_TIME,
+  payload: firstTime,
 });
 
 type AddToken = { type: typeof ADD_TOKEN; payload: string };
@@ -21,4 +28,4 @@ export const deleteToken = (): DeleteToken => ({
   type: DELETE_TOKEN,
 });
 
-export type AppActions = SetUser | AddToken | DeleteToken;
+export type AppActions = SetUser | AddToken | DeleteToken | SetFirstTime;

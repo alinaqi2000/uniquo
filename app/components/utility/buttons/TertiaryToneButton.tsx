@@ -13,6 +13,7 @@ export default function TertiaryToneButton(props: ButtonProps) {
       color={"primary.600"}
       variant="subtle"
       {...props}
+      borderRadius="lg"
     >
       {props.title}
     </Button>

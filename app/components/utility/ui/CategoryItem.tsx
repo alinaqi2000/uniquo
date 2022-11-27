@@ -12,6 +12,7 @@ import {
 import { MaterialIcons } from "@expo/vector-icons";
 import colors from "../../../config/colors";
 import { Pressable } from "react-native";
+import { Category } from "../../../models/Category";
 
 interface PressableProps extends IPressableProps {
   icon?: string;
@@ -34,51 +35,63 @@ const colorCombinations = [
     b: "#F5F7FA",
   },
 ];
-
-export default function CategoryItem(props: PressableProps) {
+interface CatProps extends PressableProps {
+  category: Category;
+  navigation?: any;
+}
+export default function CategoryItem(props: CatProps) {
   const randomNo = Math.ceil((Math.random() * 100) % colorCombinations.length);
 
   return (
-    <Pressable>
+    <Pressable
+      onPress={() => {
+        if (props.navigation) {
+          props.navigation.push("CompetitionsFeed", {
+            title: props.category.title,
+          });
+        }
+      }}
+    >
       <Box
-        shadow={2}
-        backgroundColor={colors.secondaryBg}
+        shadow={3}
+        backgroundColor={"#1F2933"}
         px={3}
         py={3}
         rounded={15}
-        w={160}
-        h={175}
+        w={120}
+        h={130}
         mr={2}
+        mb={2}
         overflow="hidden"
       >
         <Text
           color={colors.primaryTextColor}
           fontWeight="semibold"
-          fontSize={"xl"}
-          width={140}
+          fontSize={"md"}
+          width={110}
           zIndex={1}
           style={{ transform: [{ translateY: 30 }] }}
         >
-          Architecture & Culture
+          {props.category.title}
         </Text>
 
         <Box
-          h={150}
-          w={150}
+          h={120}
+          w={120}
           style={{
             position: "absolute",
-            transform: [{ translateX: 90 }, { translateY: -60 }],
+            transform: [{ translateX: 75 }, { translateY: -60 }],
           }}
           bg={colorCombinations[randomNo - 1].t}
-          rounded={150}
+          rounded={120}
           opacity={40}
         />
         <Box
-          h={150}
-          w={150}
+          h={90}
+          w={90}
           style={{
             position: "absolute",
-            transform: [{ translateX: -100 }, { translateY: 100 }],
+            transform: [{ translateX: -50 }, { translateY: 90 }],
           }}
           bg={colorCombinations[randomNo - 1].b}
           rounded={150}

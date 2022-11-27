@@ -4,12 +4,17 @@ import { Ionicons } from "@expo/vector-icons";
 import colors from "../../../config/colors";
 
 interface ButtonProps extends IButtonProps {
-   title: string;
+  title: string;
 }
 export default function PrimaryButton(props: ButtonProps) {
   return (
-    <Button backgroundColor={colors.primaryColor} variant="subtle" {...props}>
+    <Button
+      borderRadius="lg"
+      backgroundColor={colors.primaryColor}
+      variant="subtle"
+      {...props}
+    >
       {props.title}
-    </Button> 
+    </Button>
   );
 }
