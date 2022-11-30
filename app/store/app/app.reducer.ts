@@ -1,15 +1,18 @@
 import { AuthUser } from "../../models/AuthUser";
+import { Notification } from "../../models/Notification";
 import {
   ADD_TOKEN,
   AppActions,
   DELETE_TOKEN,
   SET_FIRST_TIME,
+  SET_NOTIFICATIONS,
   SET_USER,
 } from "./app.actions";
 
 export interface AppState {
   token: string;
-  user: AuthUser;
+  user: AuthUser | null;
+  notifications: Notification[];
   firstTime: boolean;
   isAuth: boolean;
   authenticating: boolean;
@@ -17,6 +20,7 @@ export interface AppState {
 const initialState: AppState = {
   token: "",
   user: null,
+  notifications: [],
   firstTime: true,
   isAuth: false,
   authenticating: true,
@@ -33,6 +37,11 @@ export default (state = initialState, action: AppActions): AppState => {
       return {
         ...state,
         user: action.payload,
+      };
+    case SET_NOTIFICATIONS:
+      return {
+        ...state,
+        notifications: action.payload,
       };
     case SET_FIRST_TIME:
       return {

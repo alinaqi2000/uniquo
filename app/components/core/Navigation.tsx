@@ -13,6 +13,10 @@ import { State } from "../../store";
 import LoginScreen from "../../screens/auth/LoginScreen";
 import AuthService from "../../services/AuthService";
 import CompetitionScreen from "../../screens/competitions/CompetitionScreen";
+import SettingScreen from "../../screens/setting/SettingScreen";
+import NotificationScreen from "../../screens/dashboard/NotificationScreen";
+import PostsScreen from "../../screens/posts/PostsScreen";
+import { Icon, Pressable } from "native-base";
 
 const Stack = createNativeStackNavigator();
 
@@ -83,6 +87,36 @@ export default function Navigation() {
             ...navigationOptions,
             title: route.params.title,
           })}
+        />
+        <Stack.Screen
+          name="PostsFeed"
+          component={PostsScreen}
+          options={({ route }: any) => ({
+            ...navigationOptions,
+            headerTitleAlign: "center",
+            title: "#" + route.params.title,
+            // headerRight: () => (
+            //   <Pressable onPress={() => alert("This is a button!")}>
+            //     <Icon />
+            //   </Pressable>
+            // ),
+          })}
+        />
+        <Stack.Screen
+          name="Setting"
+          component={SettingScreen}
+          options={{
+            ...navigationOptions,
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="Notification"
+          component={NotificationScreen}
+          options={{
+            ...navigationOptions,
+            headerShown: false,
+          }}
         />
         <Stack.Screen
           name="Components"

@@ -30,6 +30,7 @@ import CompetitionItem from "../utility/ui/CompetitionItem";
 import { Category } from "../../models/Category";
 import { User } from "../../models/User";
 import { Competition } from "../../models/Competition";
+import { Notification } from "../../models/Notification";
 
 export default function DevComponents() {
   const categories = [
@@ -88,6 +89,15 @@ export default function DevComponents() {
       null
     ),
   ];
+  const notification = new Notification(
+    1,
+    "Competition creation success",
+    "ali.naqi, you have created a competition",
+    false,
+    "my_competitions",
+    [],
+    "now"
+  );
   return (
     <VStack>
       <Heading fontSize={"3xl"} color="primary.500">
@@ -159,11 +169,11 @@ export default function DevComponents() {
         <Heading fontSize={"lg"}>UI Items</Heading>
         <VStack justifyContent={"center"} space={1}>
           <Text>Notification</Text>
-          <NotificationItem />
+          <NotificationItem notification={notification} />
         </VStack>
         <VStack justifyContent={"center"} space={1}>
           <Text>Setting</Text>
-          <SettingButton />
+          <SettingButton title={"Profile Setting"} />
         </VStack>
         <VStack justifyContent={"center"} space={1}>
           <Text>Category</Text>

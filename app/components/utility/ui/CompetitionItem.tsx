@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  IButtonProps,
   Button,
   Icon,
   Box,
@@ -9,33 +8,48 @@ import {
   IPressableProps,
   Text,
   VStack,
+  PresenceTransition,
 } from "native-base";
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { FontAwesome5, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import colors from "../../../config/colors";
-import { Pressable } from "react-native";
+import { Pressable, PressableProps } from "react-native";
 import UserAvatar from "../images/UserAvatar";
 import { Competition } from "../../../models/Competition";
+import Animated, {
+  FadeIn,
+  FadeInUp,
+  FadeOutDown,
+  FadeOutUp,
+  Layout,
+} from "react-native-reanimated";
 
-interface PressableProps extends IPressableProps {
-  icon?: string;
-}
 const colorCombinations = [
-  "#215190",
-  "#00A980",
-  "#D6C237",
-  "#02D8CB",
-  "#940009",
+  "#215190", // Blue (YinMn)
+  "#00A980", // Green (Munsell)
+  "#D89216", // Yellow (Gamboge)
+  "#1C7947", // Green (Salem)
+  "#940009", // Red (Sangria)
+  "#E94560", // Paradise Pink
+  "#704F4F", // Liver
+  "#916BBF", // Middle Blue Purple
+  "#346751", // Green Amazon
+  "#351F39", // Dark Purple
 ];
 interface Props extends PressableProps {
   competition: Competition;
+  navigation?: any;
 }
 export default function CompetitionItem(props: Props) {
   const randomNo = Math.ceil(
-    (Math.random() * 100 * colorCombinations.length) % colorCombinations.length
+    (Math.random() * 999 * colorCombinations.length) % colorCombinations.length
   );
 
   return (
-    <Pressable>
+    <Pressable
+      onPress={() =>
+        props.navigation.push("PostsFeed", { title: props.competition.slug })
+      }
+    >
       <Box
         shadow={2}
         bg={colorCombinations[randomNo - 1]}
@@ -66,7 +80,7 @@ export default function CompetitionItem(props: Props) {
                 />
               </Pressable>
             </HStack>
-            <HStack ml={1} space={4}>
+            <HStack ml={1} mt={1} space={4}>
               <HStack space={2}>
                 <Icon
                   as={MaterialIcons}
@@ -78,15 +92,31 @@ export default function CompetitionItem(props: Props) {
                   {props.competition.participations} participants
                 </Text>
               </HStack>
-              <HStack space={2}>
+              <HStack space={0} alignItems={"center"}>
                 <Icon
-                  as={Ionicons}
-                  name="card"
-                  size={"sm"}
-                  color={colors.primaryTextColor}
+                  as={FontAwesome5}
+                  name="long-arrow-alt-down"
+                  size={"xs"}
+                  // mb={1}
+                  color={"green.600"}
                 />
                 <Text color={colors.primaryTextColor} fontSize={"xs"}>
                   Rs.{props.competition.prize_money}
+                </Text>
+              </HStack>
+
+              <HStack space={0} alignItems={"center"}>
+                <Icon
+                  as={FontAwesome5}
+                  name="long-arrow-alt-up"
+                  size={"xs"}
+                  // mb={1}
+                  color={"danger.600"}
+                />
+                <Text color={colors.primaryTextColor} fontSize={"xs"}>
+                  {props.competition.entry_fee
+                    ? "Rs." + props.competition.entry_fee
+                    : "Free"}
                 </Text>
               </HStack>
             </HStack>
@@ -99,7 +129,7 @@ export default function CompetitionItem(props: Props) {
             >
               <HStack alignItems="center" space={2}>
                 <UserAvatar
-                  size={"sm"}
+                  size={"7"}
                   alt="AN"
                   uri={props.competition.organizer.avatar}
                   shadow={"5"}
@@ -108,7 +138,7 @@ export default function CompetitionItem(props: Props) {
                 <Text
                   color={colors.primaryTextColor}
                   fontWeight="semibold"
-                  fontSize={"md"}
+                  fontSize={"sm"}
                 >
                   {props.competition.organizer.username}
                 </Text>
@@ -123,7 +153,7 @@ export default function CompetitionItem(props: Props) {
                 <Text
                   color={colors.primaryTextColor}
                   fontWeight="semibold"
-                  fontSize={"sm"}
+                  fontSize={"12"}
                 >
                   {props.competition.voting_start_at}
                 </Text>

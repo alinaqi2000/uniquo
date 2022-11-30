@@ -18,7 +18,12 @@ export default function Onboarding01Screen({ navigation }) {
     <Default>
       <VStack>
         <HStack justifyContent={"space-between"} alignItems={"center"}>
-          <Image alt="Uniquo" source={require("../../../assets/icon.png")} />
+          <Image
+            alt="Uniquo"
+            h={50}
+            w={50}
+            source={require("../../../assets/icon.png")}
+          />
           <Pressable onPress={goHome}>
             <Text
               fontWeight={"semibold"}
@@ -29,9 +34,9 @@ export default function Onboarding01Screen({ navigation }) {
             </Text>
           </Pressable>
         </HStack>
-        <HStack justifyContent={"center"} h={360} mt={30}>
+        <HStack justifyContent={"center"} alignItems={"center"} h={360} mt={30}>
           <Image
-            height={150}
+            height={360}
             alt="Onboarding"
             source={require("../../../assets/images/onboarding01.png")}
           />

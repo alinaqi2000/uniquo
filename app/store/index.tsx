@@ -7,6 +7,7 @@ import { composeWithDevTools } from "redux-devtools-extension";
 import competitions, {
   CompetitionsState,
 } from "./competitions/competitions.reducer";
+import posts, { PostsState } from "./posts/posts.reducer";
 declare global {
   interface Window {
     __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: typeof compose;
@@ -16,6 +17,7 @@ const appReducer = combineReducers({
   app,
   categories,
   competitions,
+  posts,
 });
 // const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const middleware = [thunk];
@@ -24,6 +26,7 @@ export type State = {
   app: AppState;
   categories: CategoriesState;
   competitions: CompetitionsState;
+  posts: PostsState;
 };
 
 export const store = createStore(

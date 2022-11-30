@@ -26,6 +26,7 @@ import CategoryItem from "../../components/utility/ui/CategoryItem";
 import { Category } from "../../models/Category";
 import CompetitionItem from "../../components/utility/ui/CompetitionItem";
 import { Competition } from "../../models/Competition";
+import spaces from "../../config/spaces";
 
 export default function CompetitionScreen({ navigation }) {
   const { user } = useSelector((state: State) => state.app);
@@ -36,11 +37,12 @@ export default function CompetitionScreen({ navigation }) {
 
   return (
     <Feed>
-      <View justifyContent={"center"}>
+      <View justifyContent={"center"} mx={spaces.xSpace}>
         <FlatList
+          showsVerticalScrollIndicator={false}
           data={feed} // your array should go here
           renderItem={({ item }: { item: Competition }) => (
-            <CompetitionItem competition={item} />
+            <CompetitionItem navigation={navigation} competition={item} />
           )}
         />
       </View>

@@ -1,25 +1,50 @@
-import React from "react";
-import { Box, Heading, HStack, Text } from "native-base";
+import React, { useState } from "react";
+import { Box, Heading, HStack, Pressable, Text } from "native-base";
 import colors from "../../../config/colors";
-
-export default function NotificationItem() {
+import { PressableProps } from "react-native";
+import { Notification } from "../../../models/Notification";
+interface Props extends PressableProps {
+  notification: Notification;
+  navigation?: any;
+}
+export default function NotificationItem(props: Props) {
+  const [truncate, setTruncate] = useState(true);
   return (
-    <Box px={3} py={2} bg={colors.primaryTextColor} w={"100%"} rounded={10}>
-      <Heading
-        fontSize={"16"}
-        fontWeight="semibold"
-        color={colors.secondaryTextColor}
+    <Pressable
+      onPress={() =>
+        props.navigation.push("CompetitionsFeed", { title: "My Competitions" })
+      }
+    >
+      <Box
+        px={3}
+        py={2}
+        mb={2}
+        bg={colors.primaryTextColor}
+        w={"100%"}
+        rounded={10}
       >
-        Competition Created Success
-      </Heading>
-      <HStack justifyContent={"space-between"}>
-        <Text color={colors.secondaryTextColor} fontSize={"sm"}>
-          ali.naqi, you have created a competition
-        </Text>
-        <Text color={colors.secondaryTextColor} fontSize={"xs"}>
-          Now
-        </Text>
-      </HStack>
-    </Box>
+        <Heading
+          fontSize={"14"}
+          fontWeight={props.notification.read ? "normal" : "semibold"}
+          color={colors.secondaryTextColor}
+        >
+          {props.notification.title}
+        </Heading>
+        <HStack justifyContent={"space-between"}>
+          <Text
+            isTruncated={truncate}
+            onPress={() => setTruncate(!truncate)}
+            color={colors.secondaryTextColor}
+            fontSize={"xs"}
+            z-zIndex={999}
+          >
+            {props.notification.description}
+          </Text>
+          <Text color={colors.secondaryTextColor} fontSize={"xs"}>
+            {props.notification.date}
+          </Text>
+        </HStack>
+      </Box>
+    </Pressable>
   );
 }

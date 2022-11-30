@@ -9,4 +9,6 @@ export default {
   primaryTextColor: "#F5F7FA",
   secondaryTextColor: "#1A1A1A",
   dimTextColor: "#CBD2D9",
+  // inputs
+  inputPlacehoder: "#aaaaaa",
 };

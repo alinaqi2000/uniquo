@@ -11,7 +11,7 @@ export default function Feed(props: Props) {
     <NotifactionProvider>
       <StatusBar animated={true} backgroundColor={colors.primaryBg} />
       <KeyboardAvoidingView behavior={"padding"}>
-        <View mx={3}>{props.children}</View>
+        {props.children}
       </KeyboardAvoidingView>
     </NotifactionProvider>
   );
