@@ -26,6 +26,7 @@ import { Category } from "../../models/Category";
 import SettingButton from "../../components/utility/buttons/SettingButton";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../store/app/app.actions";
+import spaces from "../../config/spaces";
 
 export default function SettingScreen({ navigation }) {
   const { user } = useSelector((state: State) => state.app);
@@ -37,9 +38,9 @@ export default function SettingScreen({ navigation }) {
       <StatusBar backgroundColor={colors.primaryColor} />
       <VStack minH={600}>
         <Box
-          mx={-3}
+          mx={spaces.xSpace * -1}
           py={3}
-          px={3}
+          px={spaces.xSpace}
           minH={190}
           bg={colors.primaryColor}
           borderBottomLeftRadius={15}

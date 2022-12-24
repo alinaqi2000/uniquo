@@ -15,12 +15,19 @@ import { Image as IMG } from "react-native";
 
 import { Post } from "../../../models/Post";
 import UserAvatar from "../images/UserAvatar";
-import { FontAwesome5, MaterialIcons } from "@expo/vector-icons";
+import {
+  EvilIcons,
+  FontAwesome5,
+  Fontisto,
+  MaterialIcons,
+} from "@expo/vector-icons";
 import colors from "../../../config/colors";
 import Carousel, { Pagination } from "react-native-snap-carousel";
 import { PostImage } from "../../../models/PostImage";
 import { useWindowDimensions } from "react-native";
 import spaces from "../../../config/spaces";
+import { useDispatch } from "react-redux";
+import { setCommentPost } from "../../../store/posts/posts.actions";
 
 interface Props {
   post: Post;
@@ -76,17 +83,19 @@ const SilderItem = (props: any) => {
     </HStack>
   );
 };
+const STR_LEN = 80;
 
 export default function PostItem({ post, navigation }: Props) {
-  const greaterDesc = post.description.length > 50;
+  const greaterDesc = post.description.length > STR_LEN;
   const [fullDesc, setFullDesc] = useState(false);
   const [index, setIndex] = React.useState(1);
   const isCarousel = React.useRef(null);
 
   const dimensions = useWindowDimensions();
+  const dispatch = useDispatch();
 
   return (
-    <Box mb={5}>
+    <Box my={2}>
       {/* Header */}
       <HStack
         mx={spaces.xSpace}
@@ -94,11 +103,15 @@ export default function PostItem({ post, navigation }: Props) {
         alignItems="center"
       >
         <HStack alignItems={"center"}>
-          <UserAvatar
-            size={10}
-            uri={post.user.avatar}
-            alt={post.user.username}
-          />
+          <Pressable
+            onPress={() => navigation.push("Profile", { user: post.user })}
+          >
+            <UserAvatar
+              size={10}
+              uri={post.user.avatar}
+              alt={post.user.username}
+            />
+          </Pressable>
           <VStack ml={2}>
             <Text fontSize={"xs"} fontWeight={"semibold"}>
               {post.user.username}
@@ -125,25 +138,36 @@ export default function PostItem({ post, navigation }: Props) {
           {greaterDesc
             ? fullDesc
               ? post.description
-              : post.description.substring(0, 50) + "..."
+              : post.description.substring(0, STR_LEN) + "..."
             : post.description}
+
+          {greaterDesc &&
+            (fullDesc ? (
+              <Link
+                style={{ transform: [{ translateY: 3 }, { translateX: 4 }] }}
+                _text={{
+                  style: {
+                    color: colors.dimTextColor,
+                  },
+                }}
+                onPress={() => setFullDesc(false)}
+              >
+                less
+              </Link>
+            ) : (
+              <Link
+                style={{ transform: [{ translateY: 3 }, { translateX: 4 }] }}
+                _text={{
+                  style: {
+                    color: colors.dimTextColor,
+                  },
+                }}
+                onPress={() => setFullDesc(true)}
+              >
+                more
+              </Link>
+            ))}
         </Text>
-        {greaterDesc &&
-          (fullDesc ? (
-            <Link
-              _text={{ style: { fontSize: 12, color: colors.dimTextColor } }}
-              onPress={() => setFullDesc(false)}
-            >
-              Show less
-            </Link>
-          ) : (
-            <Link
-              _text={{ style: { fontSize: 12, color: colors.dimTextColor } }}
-              onPress={() => setFullDesc(true)}
-            >
-              Show more
-            </Link>
-          ))}
       </VStack>
       <VStack>
         {post.images.length && (
@@ -151,7 +175,7 @@ export default function PostItem({ post, navigation }: Props) {
             mt={1}
             borderColor={colors.secondaryBg}
             borderTopWidth={1}
-            // borderBottomWidth={1}
+            borderBottomWidth={1}
           >
             <Box
               background={colors.secondaryBg}
@@ -168,9 +192,9 @@ export default function PostItem({ post, navigation }: Props) {
               </Text>
             </Box>
             <Carousel
-              maximumZoomScale={5}
-              layoutCardOffset={0}
+              layoutCardOffset={9}
               ref={isCarousel}
+              vertical={false}
               data={post.images}
               renderItem={({ item, index }) => (
                 <SilderItem
@@ -188,12 +212,12 @@ export default function PostItem({ post, navigation }: Props) {
         )}
         <HStack
           borderColor={colors.secondaryBg}
-          borderBottomWidth={1}
+          // borderBottomWidth={1}
           px={spaces.xSpace}
           py={2}
           justifyContent="space-between"
         >
-          <HStack alignItems={"center"} space={1}>
+          <HStack alignItems={"center"} space={2}>
             <Icon
               as={MaterialIcons}
               color={colors.dimTextColor}
@@ -204,17 +228,19 @@ export default function PostItem({ post, navigation }: Props) {
               {post.votes} votes
             </Text>
           </HStack>
-          <HStack alignItems={"center"} space={1}>
-            <Icon
-              as={MaterialIcons}
-              color={colors.dimTextColor}
-              name="comment"
-              size={"sm"}
-            />
-            <Text fontSize={"xs"} color={colors.dimTextColor}>
-              Comments
-            </Text>
-          </HStack>
+          <Pressable onPress={() => dispatch(setCommentPost(post))}>
+            <HStack alignItems={"center"} space={2}>
+              <Icon
+                as={Fontisto}
+                color={colors.dimTextColor}
+                name="comments"
+                size={"sm"}
+              />
+              <Text fontSize={"xs"} color={colors.dimTextColor}>
+                Comments
+              </Text>
+            </HStack>
+          </Pressable>
         </HStack>
       </VStack>
     </Box>

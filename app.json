@@ -2,7 +2,7 @@
   "expo": {
     "name": "Uniquo",
     "slug": "uniquo",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
@@ -16,7 +16,8 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": false
+      "supportsTablet": false,
+      "bundleIdentifier": "com.uniquo.app"
     },
     "android": {
       "adaptiveIcon": {

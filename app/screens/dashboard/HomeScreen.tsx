@@ -155,12 +155,13 @@ export default function HomeScreen({ navigation }) {
         </Box>
 
         {/* Top Categories */}
-        <Box mt={30} mr={-5}>
+        <Box mt={30} mx={spaces.xSpace * -1}>
           <HStack alignItems={"baseline"}>
             <Text
               fontWeight={"semibold"}
               color={colors.dimTextColor}
               my={3}
+              ml={spaces.xSpace}
               fontSize={"md"}
             >
               TOP CATEGORIES
@@ -178,18 +179,27 @@ export default function HomeScreen({ navigation }) {
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             data={top} // your array should go here
-            renderItem={({ item }: { item: Category }) => (
-              <CategoryItem navigation={navigation} category={item} />
+            renderItem={({
+              item,
+              index,
+            }: {
+              item: Category;
+              index: number;
+            }) => (
+              <Box ml={index == 0 ? spaces.xSpace : 0}>
+                <CategoryItem navigation={navigation} category={item} />
+              </Box>
             )}
           />
         </Box>
         {/* New Categories */}
-        <Box mt={15} mr={-5}>
+        <Box mt={15} mx={spaces.xSpace * -1}>
           <HStack alignItems={"baseline"}>
             <Text
               fontWeight={"semibold"}
               color={colors.dimTextColor}
               my={3}
+              ml={spaces.xSpace}
               fontSize={"md"}
             >
               NEW CATEGORIES
@@ -207,21 +217,30 @@ export default function HomeScreen({ navigation }) {
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             data={newC} // your array should go here
-            renderItem={({ item }: { item: Category }) => (
-              <CategoryItem navigation={navigation} category={item} />
+            renderItem={({
+              item,
+              index,
+            }: {
+              item: Category;
+              index: number;
+            }) => (
+              <Box ml={index == 0 ? spaces.xSpace : 0}>
+                <CategoryItem navigation={navigation} category={item} />
+              </Box>
             )}
           />
         </Box>
         {/* Recent Categories */}
-        <Box mt={15} mr={-5}>
+        <Box mt={15} mx={spaces.xSpace * -1}>
           <HStack alignItems={"baseline"}>
             <Text
               fontWeight={"semibold"}
               color={colors.dimTextColor}
               my={3}
+              ml={spaces.xSpace}
               fontSize={"md"}
             >
-              RECENTLY VISITED
+              RECENTLY VISITED{" "}
             </Text>
             <Box
               h={1}
@@ -236,8 +255,16 @@ export default function HomeScreen({ navigation }) {
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             data={recent} // your array should go here
-            renderItem={({ item }: { item: Category }) => (
-              <CategoryItem navigation={navigation} category={item} />
+            renderItem={({
+              item,
+              index,
+            }: {
+              item: Category;
+              index: number;
+            }) => (
+              <Box ml={index == 0 ? spaces.xSpace : 0}>
+                <CategoryItem navigation={navigation} category={item} />
+              </Box>
             )}
           />
         </Box>

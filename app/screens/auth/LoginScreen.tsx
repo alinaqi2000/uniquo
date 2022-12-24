@@ -10,7 +10,6 @@ import {
   VStack,
 } from "native-base";
 
-import Default from "../../components/layout/Default";
 import colors from "../../config/colors";
 import FormInput from "../../components/utility/forms/FormInput";
 import FormInputPassword from "../../components/utility/forms/FormInputPassword";
@@ -19,6 +18,7 @@ import TertiaryToneButton from "../../components/utility/buttons/TertiaryToneBut
 import { useDispatch } from "react-redux";
 import { setUser } from "../../store/app/app.actions";
 import { AuthUser } from "../../models/AuthUser";
+import Feed from "../../components/layout/Feed";
 
 export default function LoginScreen({ navigation }) {
   useEffect(() => {}, []);
@@ -41,7 +41,7 @@ export default function LoginScreen({ navigation }) {
     // navigation.navigate("Home");
   };
   return (
-    <Default>
+    <Feed>
       <VStack justifyContent={"space-between"}>
         <VStack mt={30} alignItems={"center"} px={5}>
           <Image source={require("../../../assets/logo.png")} alt={"Uniquo"} />
@@ -68,7 +68,7 @@ export default function LoginScreen({ navigation }) {
             onPress={login}
             w="100%"
             mt={100}
-            title="Signin"
+            title="Sign In"
             _text={{ style: { fontWeight: "bold" } }}
           />
           <Button onPress={login} w={"100%"} mt={3} bg={"light.100"}>
@@ -85,6 +85,6 @@ export default function LoginScreen({ navigation }) {
           </Button>
         </VStack>
       </VStack>
-    </Default>
+    </Feed>
   );
 }

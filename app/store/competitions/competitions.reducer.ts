@@ -21,7 +21,7 @@ const initialState: CompetitionsState = {
       "Sargodha Cars Competition",
       "Lorem ipsum dolor, sit amet consectetur adipisicing elit.",
       "sargodha-cars-competition",
-      100,
+      0,
       5000,
       5000,
       500,

@@ -58,7 +58,7 @@ export default function CompetitionItem(props: Props) {
         rounded={15}
         w={"100%"}
         h={110}
-        mb={3}
+        my={1}
         overflow="hidden"
       >
         <View flex={1} justifyContent={"space-between"}>
@@ -127,36 +127,54 @@ export default function CompetitionItem(props: Props) {
               justifyContent={"space-between"}
               alignItems="center"
             >
-              <HStack alignItems="center" space={2}>
-                <UserAvatar
-                  size={"7"}
-                  alt="AN"
-                  uri={props.competition.organizer.avatar}
-                  shadow={"5"}
-                  borderColor={colors.primaryTextColor}
-                />
-                <Text
-                  color={colors.primaryTextColor}
-                  fontWeight="semibold"
-                  fontSize={"sm"}
-                >
-                  {props.competition.organizer.username}
-                </Text>
-              </HStack>
-              <HStack space={2} ml={1} justifyContent="center">
+              <Pressable
+                onPress={() =>
+                  props.navigation.push("Profile", {
+                    user: props.competition.organizer,
+                  })
+                }
+              >
+                <HStack alignItems="center" space={2}>
+                  <UserAvatar
+                    size={"7"}
+                    alt="AN"
+                    uri={props.competition.organizer.avatar}
+                    shadow={"5"}
+                    borderColor={colors.primaryTextColor}
+                  />
+                  <Text
+                    color={colors.primaryTextColor}
+                    fontWeight="semibold"
+                    fontSize={"sm"}
+                  >
+                    {props.competition.organizer.username}
+                  </Text>
+                </HStack>
+              </Pressable>
+              <HStack
+                space={2}
+                ml={1}
+                alignItems="flex-end"
+                justifyContent="center"
+              >
                 <Icon
                   as={Ionicons}
                   name="calendar"
                   size={"sm"}
                   color={colors.primaryTextColor}
                 />
-                <Text
-                  color={colors.primaryTextColor}
-                  fontWeight="semibold"
-                  fontSize={"12"}
-                >
-                  {props.competition.voting_start_at}
-                </Text>
+                <VStack>
+                  <Text color={colors.primaryTextColor} fontSize={"9"}>
+                    ANNOUNCEMENT
+                  </Text>
+                  <Text
+                    color={colors.primaryTextColor}
+                    fontWeight="semibold"
+                    fontSize={"12"}
+                  >
+                    {props.competition.voting_start_at}
+                  </Text>
+                </VStack>
               </HStack>
             </HStack>
           </Box>

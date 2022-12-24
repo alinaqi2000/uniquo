@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Box, HStack, Image, Pressable, Text, View, VStack } from "native-base";
 import React from "react";
+import { useWindowDimensions } from "react-native";
 import { useDispatch } from "react-redux";
 import Default from "../../components/layout/Default";
 import SecondaryIconButton from "../../components/utility/buttons/SecondaryIconButton";
@@ -14,10 +15,16 @@ export default function Onboarding03Screen({ navigation }) {
     dispatch(setFirstTime(false));
     // navigation.navigate("Login");
   };
+  const dimensions = useWindowDimensions();
+
   return (
     <Default>
-      <VStack>
-        <HStack justifyContent={"space-between"} alignItems={"center"}>
+      <VStack alignItems={"center"} minH={dimensions.height}>
+        <HStack
+          w={"100%"}
+          justifyContent={"space-between"}
+          alignItems={"center"}
+        >
           <Image
             alt="Uniquo"
             h={50}
@@ -37,12 +44,10 @@ export default function Onboarding03Screen({ navigation }) {
         <HStack
           justifyContent={"center"}
           alignItems={"center"}
-          h={360}
-          minW={360}
+          h={dimensions.height * 0.5}
           mt={30}
         >
           <Image
-            height={275}
             alt="Onboarding"
             source={require("../../../assets/images/onboarding03.png")}
           />
@@ -52,8 +57,8 @@ export default function Onboarding03Screen({ navigation }) {
             Create interactive financial
           </Text>
           <Text
-            fontSize={"lg"}
-            mt={5}
+            fontSize={"md"}
+            mt={2}
             color={colors.dimTextColor}
             textAlign="center"
           >
@@ -61,14 +66,16 @@ export default function Onboarding03Screen({ navigation }) {
             for finance companies in communicating their key messages to
             customers.
           </Text>
-          <SecondaryIconButton
-            onPress={goHome}
-            mt={20}
-            px={10}
-            title="Get Started"
-            icon="arrow-forward-outline"
-          />
         </VStack>
+        <SecondaryIconButton
+          position={"absolute"}
+          bottom={10}
+          onPress={goHome}
+          mt={20}
+          px={10}
+          title="Get Started"
+          icon="arrow-forward-outline"
+        />
       </VStack>
     </Default>
   );

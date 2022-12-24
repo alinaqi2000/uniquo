@@ -10,9 +10,9 @@ export default function Feed(props: Props) {
   return (
     <NotifactionProvider>
       <StatusBar animated={true} backgroundColor={colors.primaryBg} />
-      <KeyboardAvoidingView behavior={"padding"}>
-        {props.children}
-      </KeyboardAvoidingView>
+      {/* <KeyboardAvoidingView behavior={"padding"}> */}
+      <>{props.children}</>
+      {/* </KeyboardAvoidingView> */}
     </NotifactionProvider>
   );
 }

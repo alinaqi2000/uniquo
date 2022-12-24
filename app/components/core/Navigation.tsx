@@ -17,6 +17,7 @@ import SettingScreen from "../../screens/setting/SettingScreen";
 import NotificationScreen from "../../screens/dashboard/NotificationScreen";
 import PostsScreen from "../../screens/posts/PostsScreen";
 import { Icon, Pressable } from "native-base";
+import ProfileScreen from "../../screens/profile/ProfileScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -71,6 +72,11 @@ export default function Navigation() {
           animation: "slide_from_right",
         }}
       >
+        {/* <Stack.Screen
+          name="Components"
+          component={Components}
+          options={{ ...navigationOptions, headerShown: false }}
+        /> */}
         <Stack.Screen
           name="Home"
           component={HomeScreen}
@@ -111,17 +117,21 @@ export default function Navigation() {
           }}
         />
         <Stack.Screen
+          name="Profile"
+          component={ProfileScreen}
+          options={{
+            ...navigationOptions,
+            // headerShown: false,
+            title: "",
+          }}
+        />
+        <Stack.Screen
           name="Notification"
           component={NotificationScreen}
           options={{
             ...navigationOptions,
             headerShown: false,
           }}
-        />
-        <Stack.Screen
-          name="Components"
-          component={Components}
-          options={{ ...navigationOptions, headerShown: false }}
         />
       </Stack.Navigator>
     );

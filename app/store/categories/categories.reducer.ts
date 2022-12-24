@@ -16,7 +16,7 @@ const initialState: CategoriesState = {
     new Category(1, "Sports", "sports"),
     new Category(2, "Art & Culture", "art-culture"),
     new Category(3, "Memes", "memes"),
-    new Category(4, "Cars", "cars"),
+    // new Category(4, "Cars", "cars"),
   ],
   newC: [
     new Category(2, "Art & Culture", "art-culture"),

@@ -8,6 +8,7 @@ import PostItem from "../../components/utility/ui/PostItem";
 import { Post } from "../../models/Post";
 import colors from "../../config/colors";
 import spaces from "../../config/spaces";
+import PostCommentSheet from "../../components/utility/ui/PostCommentSheet";
 
 export default function PostsScreen({ navigation }) {
   const { user } = useSelector((state: State) => state.app);
@@ -27,8 +28,12 @@ export default function PostsScreen({ navigation }) {
       <FlatList
         showsVerticalScrollIndicator={false}
         data={feed} // your array should go here
-        renderItem={({ item }: { item: Post }) => <PostItem post={item} />}
+        renderItem={({ item }: { item: Post }) => (
+          <PostItem post={item} navigation={navigation} />
+        )}
       />
+
+      <PostCommentSheet />
     </Feed>
   );
 }

@@ -12,10 +12,11 @@ export default function SecondaryIconButton(props: ButtonProps) {
     <Button
       backgroundColor={colors.secondaryColor}
       variant="subtle"
+      _text={{ style: { color: colors.secondaryTextColor } }}
       endIcon={
         <Icon
           as={Ionicons}
-          color={colors.primaryBg}
+          color={colors.secondaryTextColor}
           name={props.icon}
           size="sm"
         />
