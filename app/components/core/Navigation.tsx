@@ -18,6 +18,7 @@ import NotificationScreen from "../../screens/dashboard/NotificationScreen";
 import PostsScreen from "../../screens/posts/PostsScreen";
 import { Icon, Pressable } from "native-base";
 import ProfileScreen from "../../screens/profile/ProfileScreen";
+import MyPostsScreen from "../../screens/posts/MyPostsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -125,6 +126,16 @@ export default function Navigation() {
             title: "",
           }}
         />
+        <Stack.Screen
+          name="MyPosts"
+          component={MyPostsScreen}
+          options={{
+            ...navigationOptions,
+            // headerShown: false,
+            title: "",
+          }}
+        />
+
         <Stack.Screen
           name="Notification"
           component={NotificationScreen}

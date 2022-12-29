@@ -27,7 +27,12 @@ import { PostImage } from "../../../models/PostImage";
 import { useWindowDimensions } from "react-native";
 import spaces from "../../../config/spaces";
 import { useDispatch } from "react-redux";
-import { setCommentPost } from "../../../store/posts/posts.actions";
+import {
+  pauseAllVideos,
+  setCommentPost,
+} from "../../../store/posts/posts.actions";
+import { PostMedia } from "../../../models/PostMedia";
+import PostVideo from "./PostVideo";
 
 interface Props {
   post: Post;
@@ -58,13 +63,13 @@ interface Props {
 //   );
 // };
 
-const SilderItem = (props: any) => {
+const SilderItem = ({ item, index }: { item: PostMedia; index: number }) => {
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
   const dimensions = useWindowDimensions();
 
   useEffect(() => {
-    IMG.getSize(props.item.url, (w, h) => {
+    IMG.getSize(item.url, (w, h) => {
       setHeight(360);
       const newW = (360 * w) / h;
 
@@ -74,12 +79,16 @@ const SilderItem = (props: any) => {
 
   return (
     <HStack justifyContent={"center"}>
-      <Image
-        h={height}
-        w={width}
-        alt={`${props.item.id}`}
-        source={{ uri: props.item.url }}
-      />
+      {item.type == "image" ? (
+        <Image
+          h={height}
+          w={width}
+          alt={`${item.id}`}
+          source={{ uri: item.url }}
+        />
+      ) : (
+        <PostVideo uri={item.url} index={index} />
+      )}
     </HStack>
   );
 };
@@ -89,6 +98,7 @@ export default function PostItem({ post, navigation }: Props) {
   const greaterDesc = post.description.length > STR_LEN;
   const [fullDesc, setFullDesc] = useState(false);
   const [index, setIndex] = React.useState(1);
+  const [pause, setPause] = React.useState(false);
   const isCarousel = React.useRef(null);
 
   const dimensions = useWindowDimensions();
@@ -196,12 +206,8 @@ export default function PostItem({ post, navigation }: Props) {
               ref={isCarousel}
               vertical={false}
               data={post.images}
-              renderItem={({ item, index }) => (
-                <SilderItem
-                  item={item}
-                  total={post.images.length}
-                  index={index + 1}
-                />
+              renderItem={({ item }: { item: any }) => (
+                <SilderItem item={item} index={index} />
               )}
               sliderWidth={dimensions.width}
               itemWidth={dimensions.width}
@@ -228,7 +234,12 @@ export default function PostItem({ post, navigation }: Props) {
               {post.votes} votes
             </Text>
           </HStack>
-          <Pressable onPress={() => dispatch(setCommentPost(post))}>
+          <Pressable
+            onPress={() => {
+              dispatch(pauseAllVideos());
+              dispatch(setCommentPost(post));
+            }}
+          >
             <HStack alignItems={"center"} space={2}>
               <Icon
                 as={Fontisto}

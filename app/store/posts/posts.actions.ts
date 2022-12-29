@@ -8,6 +8,7 @@ export const SET_REPORTED_POSTS = "SET_REPORTED_POSTS";
 export const SET_COMMENT_POST = "SET_COMMENT_POST";
 export const SET_POST_COMMENTS = "SET_POST_COMMENTS";
 export const SET_REPLY_TO = "SET_REPLY_TO";
+export const PAUSE_ALL_VIDEOS = "PAUSE_ALL_VIDEOS";
 
 type SetFeedPosts = {
   type: typeof SET_FEED_POSTS;
@@ -71,6 +72,13 @@ export const setReplyTo = (comment: PostComment | null): SetReplyTo => ({
   payload: comment,
 });
 
+type PauseAllVideos = {
+  type: typeof PAUSE_ALL_VIDEOS;
+};
+export const pauseAllVideos = (): PauseAllVideos => ({
+  type: PAUSE_ALL_VIDEOS,
+});
+
 export type PostsActions =
   | SetFeedPosts
   | SetMyPosts
@@ -78,4 +86,5 @@ export type PostsActions =
   | SetReportedPosts
   | SetCommentPost
   | SetPostComments
-  | SetReplyTo;
+  | SetReplyTo
+  | PauseAllVideos;

@@ -69,7 +69,7 @@ export default function LoginScreen({ navigation }) {
             w="100%"
             mt={100}
             title="Sign In"
-            _text={{ style: { fontWeight: "bold" } }}
+            _text={{ style: { fontWeight: "800" } }}
           />
           <Button onPress={login} w={"100%"} mt={3} bg={"light.100"}>
             <HStack alignItems={"center"}>
@@ -78,7 +78,7 @@ export default function LoginScreen({ navigation }) {
                 source={require("../../../assets/images/google.png")}
                 alt="G"
               />
-              <Text color="dark.400" ml={4} fontWeight={"semibold"}>
+              <Text color="dark.400" ml={4} fontWeight={"normal"}>
                 Sign In with Google
               </Text>
             </HStack>

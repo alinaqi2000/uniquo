@@ -15,10 +15,10 @@ import spaces from "../../config/spaces";
 import { Dimensions, useWindowDimensions } from "react-native";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import { SvgXml } from "react-native-svg";
-import CompIcon from "../../../assets/icons/competition-won.svg";
 import PostCommentSheet from "../../components/utility/ui/PostCommentSheet";
 import CompetitionItem from "../../components/utility/ui/CompetitionItem";
 import { Competition } from "../../models/Competition";
+import PostSingleImageItem from "../../components/utility/ui/PostSingleImageItem";
 
 const Tab = createBottomTabNavigator();
 
@@ -57,7 +57,7 @@ export default function ProfileScreen({ navigation, route }) {
                 Won
               </Text>
               <Text fontSize={"md"} fontWeight="semibold">
-                50
+                2
               </Text>
             </VStack>
             <VStack alignItems={"center"}>
@@ -65,7 +65,7 @@ export default function ProfileScreen({ navigation, route }) {
                 Voted
               </Text>
               <Text fontSize={"md"} fontWeight="semibold">
-                50
+                160
               </Text>
             </VStack>
           </HStack>
@@ -143,15 +143,16 @@ export default function ProfileScreen({ navigation, route }) {
 }
 
 function MY_POSTS(navigation) {
-  const { voted } = useSelector((state: State) => state.posts);
+  const { my } = useSelector((state: State) => state.posts);
 
   return (
     <>
       <FlatList
+        numColumns={3}
         showsVerticalScrollIndicator={false}
-        data={voted} // your array should go here
+        data={my} // your array should go here
         renderItem={({ item }: { item: Post }) => (
-          <PostItem post={item} navigation={navigation} />
+          <PostSingleImageItem post={item} navigation={navigation} />
         )}
       />
     </>
