@@ -6,6 +6,7 @@ import {
   HStack,
   Image,
   Link,
+  ScrollView,
   Text,
   VStack,
 } from "native-base";
@@ -18,9 +19,16 @@ import TertiaryToneButton from "../../components/utility/buttons/TertiaryToneBut
 import { useDispatch } from "react-redux";
 import { setUser } from "../../store/app/app.actions";
 import { AuthUser } from "../../models/AuthUser";
-import Feed from "../../components/layout/Feed";
+import Feed from "../../components/layout/AppLayout";
+import TextButton from "../../components/utility/buttons/TextButton";
 
+interface LoginForm {
+  email: string;
+  password: string;
+}
 export default function LoginScreen({ navigation }) {
+  const [formData, setData] = React.useState<LoginForm | null>(null);
+
   useEffect(() => {}, []);
   const dispatch = useDispatch();
   const login = () => {
@@ -34,7 +42,8 @@ export default function LoginScreen({ navigation }) {
           "92",
           "3061561248",
           1900,
-          "login"
+          "login",
+          ""
         )
       )
     );
@@ -42,49 +51,79 @@ export default function LoginScreen({ navigation }) {
   };
   return (
     <Feed>
-      <VStack justifyContent={"space-between"}>
-        <VStack mt={30} alignItems={"center"} px={5}>
-          <Image source={require("../../../assets/logo.png")} alt={"Uniquo"} />
-          <Text fontSize={"2xl"} fontWeight="semibold">
-            Login
-          </Text>
-          <Text mt={2} color={colors.dimTextColor}>
-            Please sign in to your account
-          </Text>
-          <VStack mt={10} space={5} w="100%">
-            <Box>
-              <FormInput placeholder="Email" w="100%" />
-            </Box>
-            <Box>
-              <FormInputPassword placeholder="Password" w="100%" />
-              <Pressable>
-                <Text mt={2} textAlign={"right"}>
-                  Forgot Password?
+      <ScrollView>
+        <VStack mb={10} justifyContent={"space-between"}>
+          <VStack mt={30} alignItems={"center"} px={5}>
+            <Image
+              source={require("../../../assets/icon-text.png")}
+              resizeMode="contain"
+              height={100}
+              width={200}
+              alt={"Uniquo"}
+            />
+            <Text fontSize={"2xl"} fontWeight="semibold">
+              Login
+            </Text>
+            <Text mt={2} color={colors.dimTextColor}>
+              Please sign in to your account
+            </Text>
+            <VStack mt={10} space={5} w="100%">
+              <Box>
+                <FormInput
+                  isRequired
+                  w="100%"
+                  input={{
+                    placeholder: "Email",
+                    onChangeText: (value) =>
+                      setData({ ...formData, email: value }),
+                  }}
+                />
+              </Box>
+              <Box>
+                <FormInputPassword
+                  isRequired
+                  w="100%"
+                  input={{
+                    placeholder: "Password",
+                    onChangeText: (value) =>
+                      setData({ ...formData, password: value }),
+                  }}
+                />
+                <Pressable onPress={() => navigation.navigate("Register")}>
+                  <Text mt={2} textAlign={"right"}>
+                    Forgot Password?
+                  </Text>
+                </Pressable>
+              </Box>
+            </VStack>
+            <TertiaryToneButton
+              onPress={login}
+              w="100%"
+              mt={50}
+              title="Sign In"
+              _text={{ style: { fontWeight: "800" } }}
+            />
+            <Button onPress={login} w={"100%"} mt={3} bg={"light.100"}>
+              <HStack alignItems={"center"}>
+                <Image
+                  h={26}
+                  source={require("../../../assets/images/google.png")}
+                  alt="G"
+                />
+                <Text color="dark.400" ml={4} fontWeight={"normal"}>
+                  Continue with Google
                 </Text>
-              </Pressable>
-            </Box>
+              </HStack>
+            </Button>
+            <TextButton
+              onPress={() => navigation.navigate("Register")}
+              w="100%"
+              mt={10}
+              title="New to Uniquo? Register Now"
+            />
           </VStack>
-          <TertiaryToneButton
-            onPress={login}
-            w="100%"
-            mt={100}
-            title="Sign In"
-            _text={{ style: { fontWeight: "800" } }}
-          />
-          <Button onPress={login} w={"100%"} mt={3} bg={"light.100"}>
-            <HStack alignItems={"center"}>
-              <Image
-                h={26}
-                source={require("../../../assets/images/google.png")}
-                alt="G"
-              />
-              <Text color="dark.400" ml={4} fontWeight={"normal"}>
-                Sign In with Google
-              </Text>
-            </HStack>
-          </Button>
         </VStack>
-      </VStack>
+      </ScrollView>
     </Feed>
   );
 }

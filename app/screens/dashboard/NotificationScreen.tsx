@@ -20,7 +20,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
 import NotificationItem from "../../components/utility/ui/NotificationItem";
 import { Notification } from "../../models/Notification";
-import Feed from "../../components/layout/Feed";
+import Feed from "../../components/layout/AppLayout";
 import spaces from "../../config/spaces";
 
 export default function NotificationScreen({ navigation }) {

@@ -19,6 +19,7 @@ import PostsScreen from "../../screens/posts/PostsScreen";
 import { Icon, Pressable } from "native-base";
 import ProfileScreen from "../../screens/profile/ProfileScreen";
 import MyPostsScreen from "../../screens/posts/MyPostsScreen";
+import RegisterScreen from "../../screens/auth/RegisterScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -61,6 +62,11 @@ export default function Navigation() {
         <Stack.Screen
           name="Login"
           component={LoginScreen}
+          options={{ ...navigationOptions, headerShown: false }}
+        />
+        <Stack.Screen
+          name="Register"
+          component={RegisterScreen}
           options={{ ...navigationOptions, headerShown: false }}
         />
       </Stack.Navigator>

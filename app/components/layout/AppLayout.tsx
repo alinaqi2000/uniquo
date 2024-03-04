@@ -6,7 +6,7 @@ interface Props {
   children: JSX.Element | JSX.Element[];
 }
 
-export default function Feed(props: Props) {
+export default function AppLayout(props: Props) {
   return (
     <NotifactionProvider>
       <StatusBar animated={true} backgroundColor={colors.primaryBg} />

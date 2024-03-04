@@ -9,7 +9,7 @@ interface ButtonProps extends IButtonProps {
 export default function TertiaryToneButton(props: ButtonProps) {
   return (
     <Button
-      backgroundColor="cyan.200"
+      backgroundColor="tertiary.400"
       color={"primary.600"}
       variant="subtle"
       {...props}

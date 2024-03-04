@@ -100,7 +100,7 @@ export default function HomeScreen({ navigation }) {
                 fontSize={"md"}
                 fontWeight={"semibold"}
               >
-                Welcome {firstName}!
+                Welcome {firstName} 👋
               </Text>
               <Text textAlign={"center"} fontSize={"xs"}>
                 Uniquo is all about finding your unique interests
@@ -117,10 +117,12 @@ export default function HomeScreen({ navigation }) {
               </Pressable>
             </HStack>
           </HStack>
+          {/* Quick Options */}
           <HStack
             justifyContent={"center"}
             position={"absolute"}
             bottom={-20}
+            left={0}
             zIndex={1}
             w={dimensions.width}
             space={1}
