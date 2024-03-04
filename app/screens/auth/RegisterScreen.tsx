@@ -25,9 +25,9 @@ import TextButton from "../../components/utility/buttons/TextButton";
 import { apiConfig } from "../../config/apiConfig";
 import { Formik, useFormik } from "formik";
 import * as Yup from "yup";
-import axios from "axios";
+import RequestService from "../../services/RequestService";
 
-interface rF {
+interface RegisterForm {
   full_name: string;
   email: string;
   password: string;
@@ -35,9 +35,7 @@ interface rF {
 }
 
 export default function RegisterScreen({ navigation }) {
-  const [formData, setData] = React.useState<rF | null>(null);
-
-  const validationSchema = Yup.object().shape({
+  const validationSchema = Yup.object<RegisterForm>().shape({
     full_name: Yup.string().required("Please enter your name"),
     email: Yup.string().email("Invalid email").required("Email is required"),
     password: Yup.string()
@@ -48,7 +46,8 @@ export default function RegisterScreen({ navigation }) {
       .oneOf([Yup.ref("password"), null], "Passwords must match")
       .required("Please enter password confirm password"),
   });
-  const rF = useFormik<rF>({
+
+  const rF = useFormik<RegisterForm>({
     initialValues: {
       email: "",
       password: "",
@@ -56,40 +55,41 @@ export default function RegisterScreen({ navigation }) {
       confirm_password: "",
     },
     validationSchema,
-    onSubmit: (values) => {
-      console.log(values);
-    },
+    onSubmit: () => register(),
   });
 
   useEffect(() => {}, []);
 
   const dispatch = useDispatch();
+
   const register = async () => {
-    const response = await axios
-      .post(apiConfig.apiURL + "register", {
+    const response = await RequestService.post(
+      "register",
+      {
         full_name: rF.values.full_name,
         email: rF.values.email,
         password: rF.values.password,
-      })
-      .catch(console.log);
-    console.log(response);
-
-    // dispatch(
-    //   setUser(
-    //     new AuthUser(
-    //       "Ali Naqi Al-Musawi",
-    //       "ali@gmail.com",
-    //       "ali.naqi2000",
-    //       "https://preview.keenthemes.com/metronic-v4/theme/assets/pages/media/profile/profile_user.jpg",
-    //       "92",
-    //       "3061561248",
-    //       1900,
-    //       "login",
-    //       ""
-    //     )
-    //   )
-    // );
-    // navigation.navigate("Home");
+      },
+      rF
+    );
+    if (!response.error_type) {
+      // dispatch(
+      //   setUser(
+      //     new AuthUser(
+      //       "Ali Naqi Al-Musawi",
+      //       "ali@gmail.com",
+      //       "ali.naqi2000",
+      //       "https://preview.keenthemes.com/metronic-v4/theme/assets/pages/media/profile/profile_user.jpg",
+      //       "92",
+      //       "3061561248",
+      //       1900,
+      //       "login",
+      //       ""
+      //     )
+      //   )
+      // );
+      navigation.navigate("Login");
+    }
   };
   return (
     <Feed>
@@ -185,7 +185,7 @@ export default function RegisterScreen({ navigation }) {
                   source={require("../../../assets/images/google.png")}
                   alt="G"
                 />
-                <Text color="dark.400" ml={4} fontWeight={"normal"}>
+                <Text color="dark.400" ml={4} fontWeight={"bold"}>
                   Continue with Google
                 </Text>
               </HStack>

@@ -21,33 +21,63 @@ import { setUser } from "../../store/app/app.actions";
 import { AuthUser } from "../../models/AuthUser";
 import Feed from "../../components/layout/AppLayout";
 import TextButton from "../../components/utility/buttons/TextButton";
+import * as Yup from "yup";
+import RequestService from "../../services/RequestService";
+import { useFormik } from "formik";
 
 interface LoginForm {
-  email: string;
+  identity: string;
   password: string;
 }
+
 export default function LoginScreen({ navigation }) {
-  const [formData, setData] = React.useState<LoginForm | null>(null);
+  const validationSchema = Yup.object<LoginForm>().shape({
+    identity: Yup.string().required("Please enter your email or username"),
+    password: Yup.string()
+      .min(8, "Password must be at least 8 characters")
+      .required("Password is required"),
+  });
+
+  const lF = useFormik<LoginForm>({
+    initialValues: {
+      identity: "",
+      password: "",
+    },
+    validationSchema,
+    onSubmit: () => login(),
+  });
 
   useEffect(() => {}, []);
+
   const dispatch = useDispatch();
-  const login = () => {
-    dispatch(
-      setUser(
-        new AuthUser(
-          "Ali Naqi Al-Musawi",
-          "ali@gmail.com",
-          "ali.naqi2000",
-          "https://preview.keenthemes.com/metronic-v4/theme/assets/pages/media/profile/profile_user.jpg",
-          "92",
-          "3061561248",
-          1900,
-          "login",
-          ""
-        )
-      )
+
+  const login = async () => {
+    const response = await RequestService.post(
+      "email_login",
+      {
+        identity: lF.values.identity,
+        password: lF.values.password,
+      },
+      lF
     );
-    // navigation.navigate("Home");
+    if (!response.error_type) {
+      dispatch(
+        setUser(
+          new AuthUser(
+            response.data.user.full_name,
+            response.data.user.email,
+            response.data.user.username,
+            response.data.user.avatar,
+            response.data.user.phone_code,
+            response.data.user.phone_no,
+            response.data.user.balance,
+            response.data.user.auth_provider,
+            response.data.access_token
+          )
+        )
+      );
+      // navigation.navigate("Login");
+    }
   };
   return (
     <Feed>
@@ -72,10 +102,13 @@ export default function LoginScreen({ navigation }) {
                 <FormInput
                   isRequired
                   w="100%"
+                  errorText={lF.errors.identity}
+                  isInvalid={lF.errors.identity && lF.touched.identity}
                   input={{
-                    placeholder: "Email",
-                    onChangeText: (value) =>
-                      setData({ ...formData, email: value }),
+                    placeholder: "Email or username",
+                    value: lF.values.identity,
+                    onChangeText: lF.handleChange("identity"),
+                    onBlur: lF.handleBlur("identity"),
                   }}
                 />
               </Box>
@@ -83,21 +116,19 @@ export default function LoginScreen({ navigation }) {
                 <FormInputPassword
                   isRequired
                   w="100%"
+                  errorText={lF.errors.password}
+                  isInvalid={lF.errors.password && lF.touched.password}
                   input={{
                     placeholder: "Password",
-                    onChangeText: (value) =>
-                      setData({ ...formData, password: value }),
+                    value: lF.values.password,
+                    onChangeText: lF.handleChange("password"),
+                    onBlur: lF.handleBlur("password"),
                   }}
                 />
-                <Pressable onPress={() => navigation.navigate("Register")}>
-                  <Text mt={2} textAlign={"right"}>
-                    Forgot Password?
-                  </Text>
-                </Pressable>
               </Box>
             </VStack>
             <TertiaryToneButton
-              onPress={login}
+              onPress={() => lF.handleSubmit()}
               w="100%"
               mt={50}
               title="Sign In"
@@ -110,7 +141,7 @@ export default function LoginScreen({ navigation }) {
                   source={require("../../../assets/images/google.png")}
                   alt="G"
                 />
-                <Text color="dark.400" ml={4} fontWeight={"normal"}>
+                <Text color="dark.400" ml={4} fontWeight={"bold"}>
                   Continue with Google
                 </Text>
               </HStack>
