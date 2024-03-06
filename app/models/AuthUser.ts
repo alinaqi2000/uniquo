@@ -7,7 +7,6 @@ export class AuthUser {
     public phone_code: string,
     public phone_no: string,
     public balance: number,
-    public auth_provider: string,
-    public access_token: string
-  ) {}
+    public auth_provider: string
+  ) { }
 }

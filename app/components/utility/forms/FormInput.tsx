@@ -16,8 +16,8 @@ export default function FormInput(props: InputProps) {
   return (
     <FormControl {...props}>
       <Input
-        borderColor={colors.inputPlacehoder}
-        placeholderTextColor={colors.inputPlacehoder}
+        borderColor={colors.inputPlaceholder}
+        placeholderTextColor={colors.inputPlaceholder}
         {...props.input}
       />
       {props.helperText ? (

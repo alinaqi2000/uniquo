@@ -14,16 +14,23 @@ import {
 import colors from "../../config/colors";
 import FormInput from "../../components/utility/forms/FormInput";
 import FormInputPassword from "../../components/utility/forms/FormInputPassword";
-import { Pressable } from "react-native";
 import TertiaryToneButton from "../../components/utility/buttons/TertiaryToneButton";
 import { useDispatch } from "react-redux";
-import { setUser } from "../../store/app/app.actions";
+import {
+  addToken,
+  setAuth,
+  setUser,
+  toggleLoading,
+} from "../../store/app/app.actions";
 import { AuthUser } from "../../models/AuthUser";
 import Feed from "../../components/layout/AppLayout";
 import TextButton from "../../components/utility/buttons/TextButton";
 import * as Yup from "yup";
 import RequestService from "../../services/RequestService";
 import { useFormik } from "formik";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Google from "expo-auth-session/providers/google";
+import DeviceInfo from "react-native-device-info";
 
 interface LoginForm {
   identity: string;
@@ -31,6 +38,10 @@ interface LoginForm {
 }
 
 export default function LoginScreen({ navigation }) {
+  const [request, googleResponse, promptAsync] = Google.useAuthRequest({
+    androidClientId: process.env.ANDROID_CLIENT_ID,
+  });
+
   const validationSchema = Yup.object<LoginForm>().shape({
     identity: Yup.string().required("Please enter your email or username"),
     password: Yup.string()
@@ -47,38 +58,72 @@ export default function LoginScreen({ navigation }) {
     onSubmit: () => login(),
   });
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    async function google_login() {
+      dispatch(toggleLoading());
+      const res: any = googleResponse;
+      const response = await RequestService.post("google_login", {
+        accessToken: res.authentication.accessToken,
+        deviceModel: DeviceInfo.getModel(),
+      }).finally(() => {
+        dispatch(toggleLoading());
+      });
+
+      if (!response.error_type) {
+        setupLogin(response.data);
+      }
+    }
+    if (googleResponse && googleResponse.type == "success") {
+      google_login();
+    }
+  }, [googleResponse]);
 
   const dispatch = useDispatch();
 
   const login = async () => {
+    dispatch(toggleLoading());
     const response = await RequestService.post(
       "email_login",
       {
         identity: lF.values.identity,
         password: lF.values.password,
       },
+      "",
       lF
-    );
+    ).finally(() => {
+      dispatch(toggleLoading());
+    });
+
+    if (response.error_type === "verification") {
+      dispatch(addToken(response.messages?.access_token));
+
+      navigation.navigate("EmailVerification");
+    }
     if (!response.error_type) {
-      dispatch(
-        setUser(
-          new AuthUser(
-            response.data.user.full_name,
-            response.data.user.email,
-            response.data.user.username,
-            response.data.user.avatar,
-            response.data.user.phone_code,
-            response.data.user.phone_no,
-            response.data.user.balance,
-            response.data.user.auth_provider,
-            response.data.access_token
-          )
-        )
-      );
+      setupLogin(response.data);
       // navigation.navigate("Login");
     }
   };
+  const setupLogin = async (data) => {
+    const user = new AuthUser(
+      data.user.full_name,
+      data.user.email,
+      data.user.username,
+      data.user.avatar,
+      data.user.phone_code,
+      data.user.phone_no,
+      data.user.balance,
+      data.user.auth_provider
+    );
+
+    await AsyncStorage.setItem("user", JSON.stringify(user));
+    await AsyncStorage.setItem("token", JSON.stringify(data.access_token));
+
+    dispatch(addToken(data.access_token));
+    dispatch(setAuth(true));
+    dispatch(setUser(user));
+  };
+
   return (
     <Feed>
       <ScrollView>
@@ -134,14 +179,19 @@ export default function LoginScreen({ navigation }) {
               title="Sign In"
               _text={{ style: { fontWeight: "800" } }}
             />
-            <Button onPress={login} w={"100%"} mt={3} bg={"light.100"}>
+            <Button
+              onPress={() => promptAsync()}
+              w={"100%"}
+              mt={3}
+              bg={"light.100"}
+            >
               <HStack alignItems={"center"}>
                 <Image
                   h={26}
                   source={require("../../../assets/images/google.png")}
                   alt="G"
                 />
-                <Text color="dark.400" ml={4} fontWeight={"bold"}>
+                <Text color="dark.400" ml={4} fontWeight={"normal"}>
                   Continue with Google
                 </Text>
               </HStack>
@@ -150,7 +200,7 @@ export default function LoginScreen({ navigation }) {
               onPress={() => navigation.navigate("Register")}
               w="100%"
               mt={10}
-              title="New to Uniquo? Register Now"
+              title="New to Uniquo? Register now"
             />
           </VStack>
         </VStack>

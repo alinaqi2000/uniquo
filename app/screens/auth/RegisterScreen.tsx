@@ -18,7 +18,7 @@ import FormInputPassword from "../../components/utility/forms/FormInputPassword"
 import { Pressable } from "react-native";
 import TertiaryToneButton from "../../components/utility/buttons/TertiaryToneButton";
 import { useDispatch } from "react-redux";
-import { setUser } from "../../store/app/app.actions";
+import { addToken, setUser, toggleLoading } from "../../store/app/app.actions";
 import { AuthUser } from "../../models/AuthUser";
 import Feed from "../../components/layout/AppLayout";
 import TextButton from "../../components/utility/buttons/TextButton";
@@ -63,6 +63,8 @@ export default function RegisterScreen({ navigation }) {
   const dispatch = useDispatch();
 
   const register = async () => {
+    dispatch(toggleLoading());
+
     const response = await RequestService.post(
       "register",
       {
@@ -70,25 +72,16 @@ export default function RegisterScreen({ navigation }) {
         email: rF.values.email,
         password: rF.values.password,
       },
+      "",
       rF
-    );
+    ).finally(() => {
+      dispatch(toggleLoading());
+    });
+
     if (!response.error_type) {
-      // dispatch(
-      //   setUser(
-      //     new AuthUser(
-      //       "Ali Naqi Al-Musawi",
-      //       "ali@gmail.com",
-      //       "ali.naqi2000",
-      //       "https://preview.keenthemes.com/metronic-v4/theme/assets/pages/media/profile/profile_user.jpg",
-      //       "92",
-      //       "3061561248",
-      //       1900,
-      //       "login",
-      //       ""
-      //     )
-      //   )
-      // );
-      navigation.navigate("Login");
+      dispatch(addToken(response.data.access_token));
+
+      navigation.navigate("EmailVerification");
     }
   };
   return (
@@ -185,7 +178,7 @@ export default function RegisterScreen({ navigation }) {
                   source={require("../../../assets/images/google.png")}
                   alt="G"
                 />
-                <Text color="dark.400" ml={4} fontWeight={"bold"}>
+                <Text color="dark.400" ml={4} fontWeight={"600"}>
                   Continue with Google
                 </Text>
               </HStack>
@@ -194,7 +187,7 @@ export default function RegisterScreen({ navigation }) {
               onPress={() => navigation.navigate("Login")}
               w="100%"
               mt={10}
-              title="Already registered? Login Now"
+              title="Already registered? Login now"
             />
           </VStack>
         </VStack>

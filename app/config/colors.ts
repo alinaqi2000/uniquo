@@ -10,5 +10,5 @@ export default {
   secondaryTextColor: "#1A1A1A",
   dimTextColor: "#CBD2D9",
   // inputs
-  inputPlacehoder: "#aaaaaa",
+  inputPlaceholder: "#aaaaaa",
 };

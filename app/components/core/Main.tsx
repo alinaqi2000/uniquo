@@ -1,8 +1,14 @@
 import { NavigationContainer } from "@react-navigation/native";
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { addToken, setFirstTime } from "../../store/app/app.actions";
+import {
+  addToken,
+  setFirstTime,
+  toggleLoading,
+} from "../../store/app/app.actions";
 import Navigation from "./Navigation";
+import LoadingSpinner from "../utility/ui/LoadingSpinner";
+import FlashMessage from "react-native-flash-message";
 
 interface Props {
   token: string;
@@ -15,11 +21,19 @@ export default function Main({ token, firstTime }: Props) {
   }, [token]);
 
   useEffect(() => {
+    dispatch(toggleLoading());
+  }, []);
+
+  useEffect(() => {
     dispatch(setFirstTime(firstTime));
   }, [firstTime]);
   return (
-    <NavigationContainer>
-      <Navigation />
-    </NavigationContainer>
+    <>
+      <LoadingSpinner />
+      <FlashMessage />
+      <NavigationContainer>
+        <Navigation />
+      </NavigationContainer>
+    </>
   );
 }

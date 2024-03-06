@@ -1,5 +1,5 @@
 import { View, Text } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from "../../screens/dashboard/HomeScreen";
@@ -20,11 +20,29 @@ import { Icon, Pressable } from "native-base";
 import ProfileScreen from "../../screens/profile/ProfileScreen";
 import MyPostsScreen from "../../screens/posts/MyPostsScreen";
 import RegisterScreen from "../../screens/auth/RegisterScreen";
+import EmailVerificationScreen from "../../screens/auth/EmailVerificationScreen";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { addToken, setUser } from "../../store/app/app.actions";
+import { useDispatch } from "react-redux";
 
 const Stack = createNativeStackNavigator();
 
 export default function Navigation() {
   const app = useSelector((state: State) => state.app);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    async function get() {
+      try {
+        const token = JSON.parse(await AsyncStorage.getItem("token"));
+        if (token) dispatch(addToken(token));
+
+        const user = JSON.parse(await AsyncStorage.getItem("user"));
+        if (user) dispatch(setUser(user));
+      } catch (e) {}
+    }
+    get();
+  }, []);
 
   if (app.firstTime)
     return (
@@ -51,7 +69,6 @@ export default function Navigation() {
         />
       </Stack.Navigator>
     );
-
   if (!app.user)
     return (
       <Stack.Navigator
@@ -69,87 +86,97 @@ export default function Navigation() {
           component={RegisterScreen}
           options={{ ...navigationOptions, headerShown: false }}
         />
-      </Stack.Navigator>
-    );
-
-  if (app.user)
-    return (
-      <Stack.Navigator
-        screenOptions={{
-          animation: "slide_from_right",
-        }}
-      >
-        {/* <Stack.Screen
-          name="Components"
-          component={Components}
+        <Stack.Screen
+          name="EmailVerification"
+          component={EmailVerificationScreen}
           options={{ ...navigationOptions, headerShown: false }}
-        /> */}
-        <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{
-            ...navigationOptions,
-            headerShown: false,
-            animation: "default",
-          }}
-        />
-        <Stack.Screen
-          name="CompetitionsFeed"
-          component={CompetitionScreen}
-          options={({ route }: any) => ({
-            ...navigationOptions,
-            title: route.params.title,
-          })}
-        />
-        <Stack.Screen
-          name="PostsFeed"
-          component={PostsScreen}
-          options={({ route }: any) => ({
-            ...navigationOptions,
-            headerTitleAlign: "center",
-            title: "#" + route.params.title,
-            // headerRight: () => (
-            //   <Pressable onPress={() => alert("This is a button!")}>
-            //     <Icon />
-            //   </Pressable>
-            // ),
-          })}
-        />
-        <Stack.Screen
-          name="Setting"
-          component={SettingScreen}
-          options={{
-            ...navigationOptions,
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="Profile"
-          component={ProfileScreen}
-          options={{
-            ...navigationOptions,
-            // headerShown: false,
-            title: "",
-          }}
-        />
-        <Stack.Screen
-          name="MyPosts"
-          component={MyPostsScreen}
-          options={{
-            ...navigationOptions,
-            // headerShown: false,
-            title: "",
-          }}
-        />
-
-        <Stack.Screen
-          name="Notification"
-          component={NotificationScreen}
-          options={{
-            ...navigationOptions,
-            headerShown: false,
-          }}
         />
       </Stack.Navigator>
     );
+  return (
+    <AuthService>
+      {(user, isAuth, authenticating) => {
+        if (user)
+          return (
+            <Stack.Navigator
+              screenOptions={{
+                animation: "slide_from_right",
+              }}
+            >
+              {/* <Stack.Screen
+                name="Components"
+                component={Components}
+                options={{ ...navigationOptions, headerShown: false }}
+              /> */}
+              <Stack.Screen
+                name="Home"
+                component={HomeScreen}
+                options={{
+                  ...navigationOptions,
+                  headerShown: false,
+                  animation: "default",
+                }}
+              />
+              <Stack.Screen
+                name="CompetitionsFeed"
+                component={CompetitionScreen}
+                options={({ route }: any) => ({
+                  ...navigationOptions,
+                  title: route.params.title,
+                })}
+              />
+              <Stack.Screen
+                name="PostsFeed"
+                component={PostsScreen}
+                options={({ route }: any) => ({
+                  ...navigationOptions,
+                  headerTitleAlign: "center",
+                  title: "#" + route.params.title,
+                  // headerRight: () => (
+                  //   <Pressable onPress={() => alert("This is a button!")}>
+                  //     <Icon />
+                  //   </Pressable>
+                  // ),
+                })}
+              />
+              <Stack.Screen
+                name="Setting"
+                component={SettingScreen}
+                options={{
+                  ...navigationOptions,
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="Profile"
+                component={ProfileScreen}
+                options={{
+                  ...navigationOptions,
+                  // headerShown: false,
+                  title: "",
+                }}
+              />
+              <Stack.Screen
+                name="MyPosts"
+                component={MyPostsScreen}
+                options={{
+                  ...navigationOptions,
+                  // headerShown: false,
+                  title: "",
+                }}
+              />
+
+              <Stack.Screen
+                name="Notification"
+                component={NotificationScreen}
+                options={{
+                  ...navigationOptions,
+                  headerShown: false,
+                }}
+              />
+            </Stack.Navigator>
+          );
+      }}
+    </AuthService>
+  );
 }

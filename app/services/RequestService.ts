@@ -3,8 +3,8 @@ import { apiConfig } from "../config/apiConfig";
 import { Toast } from 'native-base';
 import UIService from "./UIService";
 interface Response {
-  error_type: string | boolean;
-  messages?: Object;
+  error_type: "verification" | "authentication" | "authorization" | "validation" | "server" | boolean;
+  messages?: any;
   data?: any
 }
 export default class RequestService {
@@ -36,7 +36,7 @@ export default class RequestService {
       formikForm.setErrors(error_messages);
     }
     // authentication errors
-    if (error_type == "authentication") {
+    if (error_type == "authentication" || error_type == "verification") {
       for (let key in messages) {
         UIService.showErrorToast(Array.isArray(messages[key]) ? messages[key].join("\n") : messages[key])
       }
@@ -57,11 +57,15 @@ export default class RequestService {
 
   }
 
-  static async post(uri: string, data: any, formikForm: any): Promise<Response> {
-    var response: Response;
+  static async post(uri: string, data: any, token?: string, formikForm?: any): Promise<Response> {
+    var response: Response, headers = {};
     try {
-
-      const request = await axios.post<Response>(apiConfig.apiURL + uri, data);
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`
+      }
+      const request = await axios.post<Response>(apiConfig.apiURL + uri, data, {
+        headers
+      });
       response = request.data
 
     } catch (error) {

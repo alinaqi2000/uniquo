@@ -4,9 +4,11 @@ import {
   ADD_TOKEN,
   AppActions,
   DELETE_TOKEN,
+  SET_AUTH,
   SET_FIRST_TIME,
   SET_NOTIFICATIONS,
   SET_USER,
+  TOGGLE_LOADING,
 } from "./app.actions";
 
 export interface AppState {
@@ -15,6 +17,7 @@ export interface AppState {
   notifications: Notification[];
   firstTime: boolean;
   isAuth: boolean;
+  loading: boolean;
   authenticating: boolean;
 }
 const initialState: AppState = {
@@ -22,8 +25,9 @@ const initialState: AppState = {
   user: null,
   notifications: [],
   firstTime: true,
-  isAuth: false,
+  isAuth: true,
   authenticating: true,
+  loading: true,
 };
 
 type Action = {
@@ -52,6 +56,16 @@ export default (state = initialState, action: AppActions): AppState => {
       return {
         ...state,
         token: action.payload,
+      };
+    case TOGGLE_LOADING:
+      return {
+        ...state,
+        loading: !state.loading,
+      };
+    case SET_AUTH:
+      return {
+        ...state,
+        isAuth: action.payload,
       };
     case DELETE_TOKEN:
       return {

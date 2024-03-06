@@ -25,8 +25,9 @@ import CategoryItem from "../../components/utility/ui/CategoryItem";
 import { Category } from "../../models/Category";
 import SettingButton from "../../components/utility/buttons/SettingButton";
 import { useDispatch } from "react-redux";
-import { setUser } from "../../store/app/app.actions";
+import { addToken, setAuth, setUser } from "../../store/app/app.actions";
 import spaces from "../../config/spaces";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function SettingScreen({ navigation }) {
   const { user } = useSelector((state: State) => state.app);
@@ -86,7 +87,15 @@ export default function SettingScreen({ navigation }) {
           <SettingButton title="Reported Posts" icon="markunread-mailbox" />
           <SettingButton title="Profile Setting" icon="person" />
           <SettingButton title="Change Password" icon="lock" />
-          <Pressable onPress={() => dispatch(setUser(null))}>
+          <Pressable
+            onPress={async () => {
+              dispatch(setUser(null));
+              dispatch(setAuth(false));
+              dispatch(addToken(""));
+              await AsyncStorage.setItem("user", "");
+              await AsyncStorage.setItem("token", JSON.stringify(""));
+            }}
+          >
             <Text
               my={6}
               textAlign={"center"}

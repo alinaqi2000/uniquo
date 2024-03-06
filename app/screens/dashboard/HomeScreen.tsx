@@ -92,7 +92,7 @@ export default function HomeScreen({ navigation }) {
         >
           <HStack justifyContent={"space-between"}>
             <Pressable onPress={() => navigation.push("Setting")}>
-              <UserAvatar uri={user.avatar} alt={user.full_name} />
+              <UserAvatar size={"sm"} uri={user.avatar} alt={user.full_name} />
             </Pressable>
             <VStack alignItems={"center"} maxW={"3/5"}>
               <Text
