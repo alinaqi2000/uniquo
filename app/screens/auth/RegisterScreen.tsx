@@ -18,7 +18,12 @@ import FormInputPassword from "../../components/utility/forms/FormInputPassword"
 import { Pressable } from "react-native";
 import TertiaryToneButton from "../../components/utility/buttons/TertiaryToneButton";
 import { useDispatch } from "react-redux";
-import { addToken, setUser, toggleLoading } from "../../store/app/app.actions";
+import {
+  addToken,
+  setAuth,
+  setUser,
+  toggleLoading,
+} from "../../store/app/app.actions";
 import { AuthUser } from "../../models/AuthUser";
 import Feed from "../../components/layout/AppLayout";
 import TextButton from "../../components/utility/buttons/TextButton";
@@ -26,6 +31,10 @@ import { apiConfig } from "../../config/apiConfig";
 import { Formik, useFormik } from "formik";
 import * as Yup from "yup";
 import RequestService from "../../services/RequestService";
+import UtilService from "../../services/UtilService";
+import * as Google from "expo-auth-session/providers/google";
+
+const ANDROID_ID = process.env.ANDROID_CLIENT_ID;
 
 interface RegisterForm {
   full_name: string;
@@ -33,8 +42,11 @@ interface RegisterForm {
   password: string;
   confirm_password: string;
 }
-
 export default function RegisterScreen({ navigation }) {
+  const [request, googleResponse, promptAsync] = Google.useAuthRequest({
+    androidClientId: ANDROID_ID,
+  });
+
   const validationSchema = Yup.object<RegisterForm>().shape({
     full_name: Yup.string().required("Please enter your name"),
     email: Yup.string().email("Invalid email").required("Email is required"),
@@ -57,11 +69,47 @@ export default function RegisterScreen({ navigation }) {
     validationSchema,
     onSubmit: () => register(),
   });
-
-  useEffect(() => {}, []);
-
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    async function google_login() {
+      dispatch(toggleLoading());
+      const res: any = googleResponse;
+      const response = await RequestService.post("google_login", {
+        accessToken: res.authentication.accessToken,
+        // deviceModel: Platform.OS == "android" ? DeviceInfo.getModel() : "",
+      }).finally(() => {
+        dispatch(toggleLoading());
+      });
+
+      if (!response.error_type) {
+        setupLogin(response.data);
+      }
+    }
+    if (googleResponse && googleResponse.type == "success") {
+      google_login();
+    }
+  }, [googleResponse]);
+
+  const setupLogin = async (data) => {
+    const user = new AuthUser(
+      data.user.full_name,
+      data.user.email,
+      data.user.username,
+      data.user.avatar,
+      data.user.phone_code,
+      data.user.phone_no,
+      data.user.balance,
+      data.user.auth_provider
+    );
+
+    await UtilService.store("user", user);
+    await UtilService.store("token", data.access_token);
+
+    dispatch(addToken(data.access_token));
+    dispatch(setAuth(true));
+    dispatch(setUser(user));
+  };
   const register = async () => {
     dispatch(toggleLoading());
 
@@ -165,13 +213,19 @@ export default function RegisterScreen({ navigation }) {
             </VStack>
 
             <TertiaryToneButton
+              disabled={!rF.isValid}
               onPress={() => rF.handleSubmit()}
               w="100%"
               mt={50}
               title="Register"
               _text={{ style: { fontWeight: "800" } }}
             />
-            <Button onPress={register} w={"100%"} mt={3} bg={"light.100"}>
+            <Button
+              onPress={() => promptAsync()}
+              w={"100%"}
+              mt={3}
+              bg={"light.100"}
+            >
               <HStack alignItems={"center"}>
                 <Image
                   h={26}

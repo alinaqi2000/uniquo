@@ -38,6 +38,7 @@ const colorCombinations = [
 interface CatProps extends PressableProps {
   category: Category;
   navigation?: any;
+  onPress?: any;
 }
 export default function CategoryItem(props: CatProps) {
   const randomNo = Math.ceil((Math.random() * 100) % colorCombinations.length);

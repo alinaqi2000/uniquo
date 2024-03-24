@@ -80,7 +80,7 @@ export default function OTPInput(props: InputProps) {
                 textAlign={"center"}
                 fontSize={16}
                 onChangeText={(text) => changeText(text)}
-                borderColor={colors.inputPlaceholder}
+                borderColor={colors.inputBorder}
                 placeholderTextColor={colors.inputPlaceholder}
               />
             </Pressable>

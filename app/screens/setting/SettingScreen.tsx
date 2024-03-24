@@ -21,7 +21,7 @@ import { State } from "../../store";
 import { Platform, Pressable } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import SecondaryIconButton from "../../components/utility/buttons/SecondaryIconButton";
-import CategoryItem from "../../components/utility/ui/CategoryItem";
+import CategoryItem from "../../components/utility/app/CategoryItem";
 import { Category } from "../../models/Category";
 import SettingButton from "../../components/utility/buttons/SettingButton";
 import { useDispatch } from "react-redux";
@@ -80,7 +80,7 @@ export default function SettingScreen({ navigation }) {
           <SettingButton
             title="My Competitions"
             onPress={() =>
-              navigation.push("CompetitionsFeed", { title: "My Competitions" })
+              navigation.push("MyCompetitions", { title: "My Competitions" })
             }
             icon="emoji-events"
           />
@@ -94,6 +94,10 @@ export default function SettingScreen({ navigation }) {
               dispatch(addToken(""));
               await AsyncStorage.setItem("user", "");
               await AsyncStorage.setItem("token", JSON.stringify(""));
+              await AsyncStorage.setItem(
+                "draftCompetition",
+                JSON.stringify("")
+              );
             }}
           >
             <Text

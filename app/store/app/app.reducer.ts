@@ -1,6 +1,7 @@
 import { AuthUser } from "../../models/AuthUser";
 import { Notification } from "../../models/Notification";
 import {
+  ADD_FAILED_MEDIA,
   ADD_TOKEN,
   AppActions,
   DELETE_TOKEN,
@@ -19,6 +20,7 @@ export interface AppState {
   isAuth: boolean;
   loading: boolean;
   authenticating: boolean;
+  failedMedia: string[];
 }
 const initialState: AppState = {
   token: "",
@@ -27,7 +29,8 @@ const initialState: AppState = {
   firstTime: true,
   isAuth: true,
   authenticating: true,
-  loading: true,
+  loading: false,
+  failedMedia: []
 };
 
 type Action = {
@@ -71,6 +74,11 @@ export default (state = initialState, action: AppActions): AppState => {
       return {
         ...state,
         token: "",
+      };
+    case ADD_FAILED_MEDIA:
+      return {
+        ...state,
+        failedMedia: [...state.failedMedia, action.payload],
       };
 
     default:

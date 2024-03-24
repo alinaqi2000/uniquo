@@ -7,7 +7,7 @@ import {
   toggleLoading,
 } from "../../store/app/app.actions";
 import Navigation from "./Navigation";
-import LoadingSpinner from "../utility/ui/LoadingSpinner";
+import LoadingSpinner from "../utility/app/LoadingSpinner";
 import FlashMessage from "react-native-flash-message";
 
 interface Props {
@@ -21,7 +21,7 @@ export default function Main({ token, firstTime }: Props) {
   }, [token]);
 
   useEffect(() => {
-    dispatch(toggleLoading());
+    // dispatch(toggleLoading());
   }, []);
 
   useEffect(() => {

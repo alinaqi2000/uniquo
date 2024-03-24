@@ -20,7 +20,7 @@ export default function FormInputPassword(props: InputProps) {
   return (
     <FormControl {...props}>
       <Input
-        borderColor={colors.inputPlaceholder}
+        borderColor={colors.inputBorder}
         placeholderTextColor={colors.inputPlaceholder}
         {...props.input}
         type={show ? "text" : "password"}

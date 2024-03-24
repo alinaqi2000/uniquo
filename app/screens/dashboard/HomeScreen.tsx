@@ -21,7 +21,7 @@ import { State } from "../../store";
 import { Pressable, useWindowDimensions } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import SecondaryIconButton from "../../components/utility/buttons/SecondaryIconButton";
-import CategoryItem from "../../components/utility/ui/CategoryItem";
+import CategoryItem from "../../components/utility/app/CategoryItem";
 import { Category } from "../../models/Category";
 import { useDispatch } from "react-redux";
 import { setNotifications } from "../../store/app/app.actions";
@@ -87,8 +87,7 @@ export default function HomeScreen({ navigation }) {
           px={spaces.xSpace}
           minH={120}
           bg={colors.primaryColor}
-          borderBottomLeftRadius={15}
-          borderBottomRightRadius={15}
+          borderBottomRadius={spaces.boxBorderRadius}
         >
           <HStack justifyContent={"space-between"}>
             <Pressable onPress={() => navigation.push("Setting")}>
@@ -139,7 +138,7 @@ export default function HomeScreen({ navigation }) {
             />
             <SecondaryIconButton
               onPress={() =>
-                navigation.push("CompetitionsFeed", { title: "Organize" })
+                navigation.push("OrganizeCompetition")
               }
               shadow={"6"}
               title="Organize"
@@ -180,7 +179,7 @@ export default function HomeScreen({ navigation }) {
           <FlatList
             horizontal={true}
             showsHorizontalScrollIndicator={false}
-            data={top} // your array should go here
+            data={top}
             renderItem={({
               item,
               index,

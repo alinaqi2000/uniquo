@@ -163,7 +163,7 @@ export default function PostCommentSheet() {
                   ref={inpRef}
                   blurOnSubmit={true}
                   placeholder="Type here..."
-                  placeholderTextColor={colors.inputPlacehoder}
+                  placeholderTextColor={colors.inputPlaceholder}
                   w={width * 0.8 - spaces.xSpace * 2}
                   borderWidth={0}
                   fontSize="md"

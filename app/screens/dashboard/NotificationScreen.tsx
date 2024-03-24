@@ -18,7 +18,7 @@ import { State } from "../../store";
 import { Platform, Pressable, View } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
-import NotificationItem from "../../components/utility/ui/NotificationItem";
+import NotificationItem from "../../components/utility/app/NotificationItem";
 import { Notification } from "../../models/Notification";
 import Feed from "../../components/layout/AppLayout";
 import spaces from "../../config/spaces";

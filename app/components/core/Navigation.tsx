@@ -12,7 +12,7 @@ import { useSelector } from "react-redux";
 import { State } from "../../store";
 import LoginScreen from "../../screens/auth/LoginScreen";
 import AuthService from "../../services/AuthService";
-import CompetitionScreen from "../../screens/competitions/CompetitionScreen";
+import CompetitionScreen from "../../screens/competitions/CompetitionFeedScreen";
 import SettingScreen from "../../screens/setting/SettingScreen";
 import NotificationScreen from "../../screens/dashboard/NotificationScreen";
 import PostsScreen from "../../screens/posts/PostsScreen";
@@ -24,6 +24,12 @@ import EmailVerificationScreen from "../../screens/auth/EmailVerificationScreen"
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { addToken, setUser } from "../../store/app/app.actions";
 import { useDispatch } from "react-redux";
+import ForgotPasswordScreen from "../../screens/auth/ForgotPasswordScreen";
+import ForgotPasswordVerificationScreen from "../../screens/auth/ForgotPasswordVerificationScreen";
+import PasswordResetScreen from "../../screens/auth/PasswordResetScreen";
+import OrganizeCompetitionScreen from "../../screens/competitions/organize/OrganizeCompetitionScreen";
+import MyCompetitionsScreen from "../../screens/competitions/MyCompetitionsScreen";
+import ProcessCompetitionPaymentScreen from "../../screens/competitions/organize/ProcessCompetitionPaymentScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -91,6 +97,21 @@ export default function Navigation() {
           component={EmailVerificationScreen}
           options={{ ...navigationOptions, headerShown: false }}
         />
+        <Stack.Screen
+          name="ForgotPassword"
+          component={ForgotPasswordScreen}
+          options={{ ...navigationOptions, headerShown: false }}
+        />
+        <Stack.Screen
+          name="ForgotPasswordVerification"
+          component={ForgotPasswordVerificationScreen}
+          options={{ ...navigationOptions, headerShown: false }}
+        />
+        <Stack.Screen
+          name="PasswordReset"
+          component={PasswordResetScreen}
+          options={{ ...navigationOptions, headerShown: false }}
+        />
       </Stack.Navigator>
     );
   return (
@@ -100,7 +121,7 @@ export default function Navigation() {
           return (
             <Stack.Navigator
               screenOptions={{
-                animation: "slide_from_right",
+                animation: "fade_from_bottom",
               }}
             >
               {/* <Stack.Screen
@@ -118,11 +139,36 @@ export default function Navigation() {
                 }}
               />
               <Stack.Screen
+                name="OrganizeCompetition"
+                component={OrganizeCompetitionScreen}
+                options={({ route }: any) => ({
+                  ...navigationOptions,
+                  title: route.params?.title || "Organize Competition",
+                })}
+              />
+              <Stack.Screen
+                name="Detail&ProcessCompetitionPayment"
+                component={ProcessCompetitionPaymentScreen}
+                options={({ route }: any) => ({
+                  ...navigationOptions,
+                  title: route.params?.title || "Process Payment",
+                })}
+              />
+
+              <Stack.Screen
                 name="CompetitionsFeed"
                 component={CompetitionScreen}
                 options={({ route }: any) => ({
                   ...navigationOptions,
                   title: route.params.title,
+                })}
+              />
+              <Stack.Screen
+                name="MyCompetitions"
+                component={MyCompetitionsScreen}
+                options={({ route }: any) => ({
+                  ...navigationOptions,
+                  title: route.params?.title || "My Competitions",
                 })}
               />
               <Stack.Screen

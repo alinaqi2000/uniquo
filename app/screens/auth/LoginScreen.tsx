@@ -31,15 +31,18 @@ import { useFormik } from "formik";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Google from "expo-auth-session/providers/google";
 import DeviceInfo from "react-native-device-info";
+import { Platform } from "react-native";
+import UtilService from "../../services/UtilService";
+
+const ANDROID_ID = process.env.ANDROID_CLIENT_ID;
 
 interface LoginForm {
   identity: string;
   password: string;
 }
-
 export default function LoginScreen({ navigation }) {
   const [request, googleResponse, promptAsync] = Google.useAuthRequest({
-    androidClientId: process.env.ANDROID_CLIENT_ID,
+    androidClientId: ANDROID_ID,
   });
 
   const validationSchema = Yup.object<LoginForm>().shape({
@@ -64,7 +67,7 @@ export default function LoginScreen({ navigation }) {
       const res: any = googleResponse;
       const response = await RequestService.post("google_login", {
         accessToken: res.authentication.accessToken,
-        deviceModel: DeviceInfo.getModel(),
+        // deviceModel: Platform.OS == "android" ? DeviceInfo.getModel() : "",
       }).finally(() => {
         dispatch(toggleLoading());
       });
@@ -116,8 +119,8 @@ export default function LoginScreen({ navigation }) {
       data.user.auth_provider
     );
 
-    await AsyncStorage.setItem("user", JSON.stringify(user));
-    await AsyncStorage.setItem("token", JSON.stringify(data.access_token));
+    await UtilService.store("user", user);
+    await UtilService.store("token", data.access_token);
 
     dispatch(addToken(data.access_token));
     dispatch(setAuth(true));
@@ -171,8 +174,16 @@ export default function LoginScreen({ navigation }) {
                   }}
                 />
               </Box>
+              <HStack justifyContent={"flex-end"} px={1}>
+                <TextButton
+                  onPress={() => navigation.navigate("ForgotPassword")}
+                  title="Forgot password?"
+                  underline={true}
+                />
+              </HStack>
             </VStack>
             <TertiaryToneButton
+              disabled={!lF.isValid}
               onPress={() => lF.handleSubmit()}
               w="100%"
               mt={50}
@@ -196,6 +207,7 @@ export default function LoginScreen({ navigation }) {
                 </Text>
               </HStack>
             </Button>
+
             <TextButton
               onPress={() => navigation.navigate("Register")}
               w="100%"

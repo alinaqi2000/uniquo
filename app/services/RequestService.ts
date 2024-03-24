@@ -9,34 +9,32 @@ interface Response {
 }
 export default class RequestService {
 
-  static async get(uri: string, params?: any) {
-    try {
-      const response = await axios.get(apiConfig.apiURL + uri, { params });
-      return response.data;
-    } catch (error) {
-      console.error("Error in GET request:", error);
-      UIService.showErrorToast('An error occurred while processing your request')
-      throw error;
-    }
-  }
-  private static resolve_validation(error_type: string | boolean, messages: Object, formikForm: any) {
+
+  private static resolve_validation(error_type: string | boolean, messages: Object, formikForm: any = null) {
     if (!error_type) {
       return;
     }
 
     // validation errors
-    if (error_type == "validation") {
-      var error_messages = {};
-      for (let key in messages) {
-        error_messages = {
-          ...error_messages,
-          [key]: Array.isArray(messages[key]) ? messages[key].join("\n") : messages[key],
-        };
+
+    if (error_type === "validation") {
+      if (formikForm === null) {
+        for (let key in messages) {
+          UIService.showErrorToast(Array.isArray(messages[key]) ? messages[key].join("\n") : messages[key])
+        }
+      } else {
+        var error_messages = {};
+        for (let key in messages) {
+          error_messages = {
+            ...error_messages,
+            [key]: Array.isArray(messages[key]) ? messages[key].join("\n") : messages[key],
+          };
+        }
+        formikForm.setErrors(error_messages);
       }
-      formikForm.setErrors(error_messages);
     }
     // authentication errors
-    if (error_type == "authentication" || error_type == "verification") {
+    if (error_type === "authentication" || error_type === "verification") {
       for (let key in messages) {
         UIService.showErrorToast(Array.isArray(messages[key]) ? messages[key].join("\n") : messages[key])
       }
@@ -56,7 +54,25 @@ export default class RequestService {
     }
 
   }
+  static async get(uri: string, token: string = "", params: any = {}): Promise<Response> {
+    var response: Response, headers = {};
+    try {
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`
+      }
+      const request = await axios.get<Response>(apiConfig.apiURL + uri, { params, headers });
+      response = request.data
 
+    } catch (error) {
+
+      response = error.response.data
+      console.error("Error in GET request:", response);
+      this.resolve_codes(error.response.status)
+
+    } finally {
+      return response
+    }
+  }
   static async post(uri: string, data: any, token?: string, formikForm?: any): Promise<Response> {
     var response: Response, headers = {};
     try {
@@ -82,29 +98,50 @@ export default class RequestService {
     }
   }
 
-  static async put(uri: string, data: any) {
+  static async put(uri: string, data: any, token?: string, formikForm?: any): Promise<Response> {
+    var response: Response, headers = {};
     try {
-      const response = await axios.put(apiConfig.apiURL + uri, data);
-      return response.data;
-    } catch (error) {
-      console.error("Error in PUT request:", error);
-      Toast.show({
-        title: 'An error occurred while processing your request',
-        bgColor: "red.500",
-        duration: 3000
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`
+      }
+      const request = await axios.put<Response>(apiConfig.apiURL + uri, data, {
+        headers
       });
-      throw error;
+      response = request.data
+
+    } catch (error) {
+
+      response = error.response.data
+      console.error("Error in POST request:", response);
+      this.resolve_codes(error.response.status)
+
+    } finally {
+
+      this.resolve_validation(response.error_type, response.messages, formikForm)
+
+      return response
     }
   }
-
-  static async delete(uri: string) {
+  static async delete(uri: string, token: string = "", params: any = {}): Promise<Response> {
+    var response: Response, headers = {};
     try {
-      const response = await axios.delete(apiConfig.apiURL + uri);
-      return response.data;
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`
+      }
+      const request = await axios.delete<Response>(apiConfig.apiURL + uri, { params, headers });
+      response = request.data
+
     } catch (error) {
-      console.error("Error in DELETE request:", error);
-      UIService.showErrorToast('An error occurred while processing your request')
-      throw error;
+
+      response = error.response.data
+      console.error("Error in Delete request:", response);
+      this.resolve_codes(error.response.status)
+
+    } finally {
+
+      this.resolve_validation(response.error_type, response.messages)
+
+      return response
     }
   }
 }

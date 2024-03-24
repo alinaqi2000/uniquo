@@ -3,7 +3,7 @@ import { FlatList, HStack, Icon, Text, View, VStack } from "native-base";
 
 import { useSelector } from "react-redux";
 import { State } from "../../store";
-import PostItem from "../../components/utility/ui/PostItem";
+import PostItem from "../../components/utility/app/PostItem";
 import { Post } from "../../models/Post";
 import Feed from "../../components/layout/AppLayout";
 import UserAvatar from "../../components/utility/images/UserAvatar";
@@ -15,10 +15,10 @@ import spaces from "../../config/spaces";
 import { Dimensions, useWindowDimensions } from "react-native";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import { SvgXml } from "react-native-svg";
-import PostCommentSheet from "../../components/utility/ui/PostCommentSheet";
-import CompetitionItem from "../../components/utility/ui/CompetitionItem";
+import PostCommentSheet from "../../components/utility/app/PostCommentSheet";
+import CompetitionItem from "../../components/utility/app/CompetitionItem";
 import { Competition } from "../../models/Competition";
-import PostSingleImageItem from "../../components/utility/ui/PostSingleImageItem";
+import PostSingleImageItem from "../../components/utility/app/PostSingleImageItem";
 import { PostMedia } from "../../models/PostMedia";
 import { useDispatch } from "react-redux";
 import {

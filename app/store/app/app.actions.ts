@@ -8,6 +8,7 @@ export const ADD_TOKEN = "ADD_TOKEN";
 export const DELETE_TOKEN = "DELETE_TOKEN";
 export const TOGGLE_LOADING = "TOGGLE_LOADING";
 export const SET_AUTH = "SET_AUTH";
+export const ADD_FAILED_MEDIA = "ADD_FAILED_MEDIA";
 
 type SetUser = { type: typeof SET_USER; payload: AuthUser };
 export const setUser = (user: AuthUser | null): SetUser => ({
@@ -37,11 +38,13 @@ export const addToken = (token: string): AddToken => ({
   type: ADD_TOKEN,
   payload: token,
 });
+
 type SetAuth = { type: typeof SET_AUTH; payload: boolean };
 export const setAuth = (isAuth: boolean): SetAuth => ({
   type: SET_AUTH,
   payload: isAuth,
 });
+
 type DeleteToken = { type: typeof DELETE_TOKEN };
 export const deleteToken = (): DeleteToken => ({
   type: DELETE_TOKEN,
@@ -52,6 +55,12 @@ export const toggleLoading = (): ToggleLoading => ({
   type: TOGGLE_LOADING
 });
 
+type AddFailedMedia = { type: typeof ADD_FAILED_MEDIA; payload: string };
+export const addFailedMedia = (payload: string): AddFailedMedia => ({
+  type: ADD_FAILED_MEDIA,
+  payload
+});
+
 export type AppActions =
   | SetUser
   | SetNotifications
@@ -59,4 +68,5 @@ export type AppActions =
   | SetAuth
   | DeleteToken
   | ToggleLoading
-  | SetFirstTime;
+  | SetFirstTime
+  | AddFailedMedia;

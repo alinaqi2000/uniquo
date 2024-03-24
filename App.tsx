@@ -7,7 +7,7 @@ import { Provider } from "react-redux";
 import { store } from "./app/store";
 import NotificationTokenProvider from "./app/components/hoc/NotificationTokenProvider";
 import Main from "./app/components/core/Main";
-import { StyleSheet } from "react-native";
+import { LogBox, StyleSheet } from "react-native";
 import { themeConfig } from "./app/config/themeConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -29,6 +29,9 @@ export default function App() {
   useEffect(() => {
     async function prepare() {
       await SplashScreen.preventAutoHideAsync();
+      LogBox.ignoreLogs([
+        "In React 18, SSRProvider is not necessary and is a noop. You can remove it from your app.",
+      ]);
     }
     prepare();
   }, []);
