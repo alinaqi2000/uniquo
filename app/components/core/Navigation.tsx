@@ -30,6 +30,8 @@ import PasswordResetScreen from "../../screens/auth/PasswordResetScreen";
 import OrganizeCompetitionScreen from "../../screens/competitions/organize/OrganizeCompetitionScreen";
 import MyCompetitionsScreen from "../../screens/competitions/MyCompetitionsScreen";
 import ProcessCompetitionPaymentScreen from "../../screens/competitions/organize/ProcessCompetitionPaymentScreen";
+import CardPaymentModal from "../../screens/competitions/organize/CardPaymentModal";
+import PaymentSuccessModal from "../../screens/competitions/organize/PaymentSuccessModal";
 
 const Stack = createNativeStackNavigator();
 
@@ -154,6 +156,22 @@ export default function Navigation() {
                   title: route.params?.title || "Process Payment",
                 })}
               />
+              <Stack.Group
+                screenOptions={{
+                  presentation: "transparentModal",
+                  headerShown: false,
+                }}
+              >
+                <Stack.Screen name="CardPayment" component={CardPaymentModal} />
+                <Stack.Screen
+                  name="PaymentSuccess"
+                  options={{
+                    animation: "slide_from_right",
+                    animationDuration: 50,
+                  }}
+                  component={PaymentSuccessModal}
+                />
+              </Stack.Group>
 
               <Stack.Screen
                 name="CompetitionsFeed"

@@ -5,6 +5,7 @@ export default {
   // backgrounds
   primaryBg: "#151D24",
   secondaryBg: "#272d33",
+  overlay: "rgba(0, 0, 0, .6)",
   // texts
   primaryTextColor: "#F5F7FA",
   secondaryTextColor: "#1A1A1A",

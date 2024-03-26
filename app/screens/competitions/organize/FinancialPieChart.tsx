@@ -39,7 +39,7 @@ export function BusinessCard({ color, amount, participation }) {
       </Text>
       <Center>
         <Text fontSize="md" fontWeight="bold" color={`${color}.500`} mt={3 / 2}>
-          Rs.{UtilService.number(amount)}
+          {UIService.currency(+amount)}
         </Text>
       </Center>
       <Text fontSize={10} color={`blueGray.500`} textAlign="center" mt={3 / 2}>

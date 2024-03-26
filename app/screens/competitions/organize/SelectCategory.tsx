@@ -145,7 +145,7 @@ export default function SelectCategory(props: Props) {
           <HStack justifyContent={"space-between"}>
             <FormInput
               input={{
-                placeholder: "Search categories",
+                placeholder: "Search/Suggest Categories",
                 value: searchInp,
                 onChangeText: setSearchInp,
               }}

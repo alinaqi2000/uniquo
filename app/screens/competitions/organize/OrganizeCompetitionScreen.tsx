@@ -465,15 +465,15 @@ function FinancialBox({ cF, editMode }) {
   const generateBusinessPotential = (participation) => {
     var amount = 0;
     const participants =
-      (participation / 100) * +cF.values.participants_allowed;
+      (participation / 100) * +(cF.values.participants_allowed || 0);
 
-    const business = participants * +cF.values.entry_fee;
+    const business = participants * +(cF.values.entry_fee || 0);
 
     amount =
       business -
-      financialInfo.cost -
-      financialInfo.platform_charges -
-      +cF.values.prize_money;
+      +financialInfo.cost -
+      +financialInfo.platform_charges -
+      +(cF.values.prize_money || 0);
 
     return { amount, participation };
   };

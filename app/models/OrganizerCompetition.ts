@@ -1,8 +1,7 @@
 import { Category } from "./Category";
+import { Payment } from "./Payment";
 import { User } from "./User";
 import { COMPETITION_STAGE } from "./constants";
-import { DraftCompetition } from "./form/DraftCompetition";
-
 
 export class OrganizerCompetition {
   constructor(
@@ -35,6 +34,7 @@ export class OrganizerCompetition {
     public category: Category = new Category(),
     public organizer: User = new User(),
     public winner: User | null = null,
+    public payment: Payment,
     public bgColor: string = ""
   ) {
   }

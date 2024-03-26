@@ -3,6 +3,7 @@ export const animations = {
     dots: require("../../assets/animations/loading-dots.json"),
     cartoon: require("../../assets/animations/moving.json"),
     empty_box: require("../../assets/animations/empty_box.json"),
+    payment_success: require("../../assets/animations/payment_success.json")
 }
 export const gifs = {
     empty: require("../../assets/animations/empty.gif")

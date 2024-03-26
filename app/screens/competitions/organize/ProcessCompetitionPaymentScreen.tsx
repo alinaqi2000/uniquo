@@ -38,6 +38,9 @@ import HeaderActionButton from "../../../components/utility/buttons/HeaderAction
 import ListItem from "../../../components/utility/app/common/ListItem";
 import { BaseCompetition } from "../../../models/constants";
 import { points } from "../../../config/points";
+import { useFormik } from "formik";
+import { DraftCompetition } from "../../../models/form/DraftCompetition";
+import { setDraftCompetition } from "../../../store/competitions/competitions.actions";
 
 const TOP_THRESHOLD = 150;
 const BOTTOM_NEGATIVE_SPACE = 100;
@@ -46,17 +49,29 @@ const DRAGGER_HEIGHT = 35;
 
 export default function ProcessCompetitionPaymentScreen({ navigation, route }) {
   const { height } = useWindowDimensions();
-  const { user } = useSelector((state: State) => state.app);
+  const { token } = useSelector((state: State) => state.app);
   const { my } = useSelector((state: State) => state.competitions);
   const dispatch = useDispatch();
   const { competition }: { competition: OrganizerCompetition } = route.params;
   const [stateCompetition, setStateCompetition] = useState(competition);
 
+  const cF = useFormik<DraftCompetition>({
+    initialValues: DraftCompetition.fromBase(competition),
+    onSubmit: () => validateDates(cF.values),
+  });
+
   useEffect(() => {
     const findCompetition = my.find((c) => c.id == competition.id);
+
+    if (
+      competition.stage === "payment_verification_pending" ||
+      competition.stage === "pending_publish"
+    ) {
+      validateDates(findCompetition);
+    }
+
     setStateCompetition(findCompetition);
   }, [my]);
-
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -75,6 +90,25 @@ export default function ProcessCompetitionPaymentScreen({ navigation, route }) {
       ),
     });
   }, [navigation]);
+
+  const validateDates = async (findCompetition) => {
+    cF.resetForm({ errors: {} });
+
+    const response = await RequestService.post(
+      "competitions/" + competition.id + "/verify_dates",
+      { ...DraftCompetition.fromBase(findCompetition) },
+      token,
+      cF
+    );
+    if (response.error_type == "validation") {
+      UIService.showErrorToast(
+        "Please update the competition before publishing."
+      );
+    }
+  };
+  const isInvalid = (key: string) => {
+    return cF.errors[key];
+  };
   return (
     <Feed>
       <View flex={1} w={"100%"} h={height}>
@@ -105,7 +139,7 @@ export default function ProcessCompetitionPaymentScreen({ navigation, route }) {
                     alignItems={"center"}
                   >
                     <Text>Title</Text>
-                    <Text textAlign={"right"}>{stateCompetition.title}</Text>
+                    <Text textAlign={"right"}>{stateCompetition?.title}</Text>
                   </HStack>
                   <HStack
                     justifyContent={"space-between"}
@@ -113,7 +147,7 @@ export default function ProcessCompetitionPaymentScreen({ navigation, route }) {
                   >
                     <Text fontSize={"xs"}>Hashtag#</Text>
                     <Text fontSize={"xs"} textAlign={"right"}>
-                      #{stateCompetition.slug}
+                      #{stateCompetition?.slug}
                     </Text>
                   </HStack>
                   <HStack
@@ -122,34 +156,58 @@ export default function ProcessCompetitionPaymentScreen({ navigation, route }) {
                   >
                     <Text fontSize={"xs"}>Category</Text>
                     <Text fontSize={"xs"} textAlign={"right"}>
-                      {stateCompetition.category.title}
+                      {stateCompetition?.category.title}
                     </Text>
                   </HStack>
                   <HStack
+                    borderBottomWidth={isInvalid("voting_start_at") ? 1 : 0}
+                    borderColor={"red.400"}
                     justifyContent={"space-between"}
                     alignItems={"center"}
                   >
                     <Text fontSize={"xs"}>Voting Date</Text>
                     <Text fontSize={"xs"} textAlign={"right"}>
-                      {stateCompetition.voting_start_at}
+                      {UtilService.convertHoursFormat(
+                        stateCompetition?.voting_time
+                      )}{" "}
+                      {stateCompetition?.voting_start_at}
                     </Text>
                   </HStack>
+                  {isInvalid("voting_start_at") ? (
+                    <HStack>
+                      <Text fontSize={"xs"} color={"red.400"}>
+                        {cF.errors.voting_start_at}
+                      </Text>
+                    </HStack>
+                  ) : null}
                   <HStack
+                    borderBottomWidth={isInvalid("announcement_at") ? 1 : 0}
+                    borderColor={"red.400"}
                     justifyContent={"space-between"}
                     alignItems={"center"}
                   >
                     <Text fontSize={"xs"}>Announcement Date</Text>
                     <Text fontSize={"xs"} textAlign={"right"}>
-                      {stateCompetition.announcement_at}
+                      {UtilService.convertHoursFormat(
+                        stateCompetition?.announcement_at
+                      )}{" "}
+                      {stateCompetition?.announcement_at}
                     </Text>
                   </HStack>
+                  {isInvalid("announcement_at") ? (
+                    <HStack>
+                      <Text fontSize={"xs"} color={"red.400"}>
+                        {cF.errors.announcement_at}
+                      </Text>
+                    </HStack>
+                  ) : null}
                   <HStack
                     justifyContent={"space-between"}
                     alignItems={"center"}
                   >
                     <Text fontSize={"xs"}>Participants Allowed</Text>
                     <Text fontSize={"xs"} textAlign={"right"}>
-                      {stateCompetition.participants_allowed}
+                      {stateCompetition?.participants_allowed}
                     </Text>
                   </HStack>
                 </VStack>
@@ -175,7 +233,7 @@ export default function ProcessCompetitionPaymentScreen({ navigation, route }) {
                     <Text fontSize={"xs"}>Entry Fee</Text>
                     <Text fontSize={"xs"} textAlign={"right"}>
                       {UIService.currency(
-                        stateCompetition.financials.entry_fee
+                        stateCompetition?.financials.entry_fee
                       )}
                     </Text>
                   </HStack>
@@ -185,7 +243,7 @@ export default function ProcessCompetitionPaymentScreen({ navigation, route }) {
                   >
                     <Text fontSize={"xs"}>Cost</Text>
                     <Text fontSize={"xs"} textAlign={"right"}>
-                      {UIService.currency(stateCompetition.financials.cost)}
+                      {UIService.currency(stateCompetition?.financials.cost)}
                     </Text>
                   </HStack>
                   <HStack
@@ -195,7 +253,7 @@ export default function ProcessCompetitionPaymentScreen({ navigation, route }) {
                     <Text fontSize={"xs"}>Platform Charges</Text>
                     <Text fontSize={"xs"} textAlign={"right"}>
                       {UIService.currency(
-                        stateCompetition.financials.platform_charges
+                        stateCompetition?.financials.platform_charges
                       )}
                     </Text>
                   </HStack>
@@ -206,7 +264,7 @@ export default function ProcessCompetitionPaymentScreen({ navigation, route }) {
                     <Text fontSize={"xs"}>Prize Money</Text>
                     <Text fontSize={"xs"} textAlign={"right"}>
                       {UIService.currency(
-                        stateCompetition.financials.prize_money
+                        stateCompetition?.financials.prize_money
                       )}
                     </Text>
                   </HStack>
@@ -217,7 +275,7 @@ export default function ProcessCompetitionPaymentScreen({ navigation, route }) {
                     <Text fontSize={"md"}>Total</Text>
                     <Text fontSize={"md"} textAlign={"right"}>
                       {UIService.currency(
-                        stateCompetition.financials.total_amount
+                        stateCompetition?.financials.total_amount
                       )}
                     </Text>
                   </HStack>
@@ -227,27 +285,15 @@ export default function ProcessCompetitionPaymentScreen({ navigation, route }) {
           </ScrollView>
         </View>
       </View>
-      <FinancialBox
-        {...stateCompetition.financials}
-        participants_allowed={stateCompetition.participants_allowed}
-      />
+      <FinancialBox navigation={navigation} competition={stateCompetition} />
     </Feed>
   );
 }
-interface FinancialProps {
-  entry_fee: number;
-  cost: number;
-  platform_charges: number;
-  prize_money: number;
-  total_amount: number;
-  participants_allowed: number;
-}
-
 function AlertBox(competition: BaseCompetition) {
   switch (competition.stage) {
     case "payment_verification_pending":
       return (
-        <Alert status="info" colorScheme="info">
+        <Alert status="warning" colorScheme="warning">
           <VStack space={1} flexShrink={1} w="100%">
             <HStack
               flexShrink={1}
@@ -281,15 +327,11 @@ function AlertBox(competition: BaseCompetition) {
       break;
   }
 }
-
-function FinancialBox({
-  entry_fee,
-  cost,
-  platform_charges,
-  prize_money,
-  total_amount,
-  participants_allowed,
-}: FinancialProps) {
+interface FinancialProps {
+  competition: OrganizerCompetition;
+  navigation?: any;
+}
+function FinancialBox({ competition, navigation }: FinancialProps) {
   const { width, height } = useWindowDimensions();
   const { token } = useSelector((state: State) => state.app);
   const [loading, setLoading] = useState(false);
@@ -328,11 +370,16 @@ function FinancialBox({
 
   const generateBusinessPotential = (participation) => {
     var amount = 0;
-    const participants = (participation / 100) * +participants_allowed;
+    const participants =
+      (participation / 100) * +competition.participants_allowed;
 
-    const business = participants * +entry_fee;
+    const business = participants * +competition.financials.entry_fee;
 
-    amount = business - cost - platform_charges - +prize_money;
+    amount =
+      business -
+      competition.financials.cost -
+      competition.financials.platform_charges -
+      +competition.financials.prize_money;
 
     return { amount, participation };
   };
@@ -419,9 +466,9 @@ function FinancialBox({
                       </HStack>
                     </VStack>
                     <FinancialPieChart
-                      cost={cost}
-                      platform_charges={platform_charges}
-                      prize_money={prize_money}
+                      cost={competition.financials.cost}
+                      platform_charges={competition.financials.platform_charges}
+                      prize_money={competition.financials.prize_money}
                     />
                   </HStack>
                   <HStack space={2} mt={6} justifyContent={"space-evenly"}>
@@ -460,6 +507,7 @@ function FinancialBox({
               bg={colors.secondaryColor}
               mx={spaces.xSpace * -1 - 6}
               px={3}
+              mb={2}
               py={2}
               borderRadius={5}
             >
@@ -475,70 +523,80 @@ function FinancialBox({
                 color={"tertiary.700"}
                 fontWeight={"semibold"}
               >
-                {UIService.currency(total_amount)}
+                {UIService.currency(competition.financials.total_amount)}
               </Text>
             </HStack>
-            <VStack mb={4}>
-              <Pressable _pressed={{ bgColor: colors.skeletonStart }}>
-                <HStack
-                  mb={0}
-                  px={3}
-                  mx={spaces.xSpace * -1 - 6}
-                  py={2}
-                  borderBottomWidth={1}
-                  borderBottomColor={colors.dimBorder}
-                  justifyContent={"space-between"}
-                  alignItems={"center"}
+            {competition.payment ? (
+              <Text>Paid!</Text>
+            ) : (
+              <VStack mb={4}>
+                <Pressable
+                  onPress={() =>
+                    navigation.navigate("CardPayment", { competition })
+                  }
+                  _pressed={{ bgColor: colors.skeletonStart }}
                 >
-                  <Text fontSize={"xs"}>Pay with Card</Text>
+                  <HStack
+                    mb={0}
+                    px={3}
+                    mx={spaces.xSpace * -1 - 6}
+                    py={2}
+                    borderBottomWidth={1}
+                    borderBottomColor={colors.dimBorder}
+                    justifyContent={"space-between"}
+                    alignItems={"center"}
+                  >
+                    <Text fontSize={"xs"}>Pay with Card</Text>
 
-                  <Image size={8} source={icons.credit_card} />
-                </HStack>
-              </Pressable>
-              <Pressable _pressed={{ bgColor: colors.skeletonStart }}>
-                <HStack
-                  mb={0}
-                  px={3}
-                  mx={spaces.xSpace * -1 - 6}
-                  py={2}
-                  borderBottomWidth={1}
-                  borderBottomColor={colors.dimBorder}
-                  justifyContent={"space-between"}
-                  alignItems={"center"}
-                >
-                  <Text fontSize={"xs"}>Pay with Jazzcash</Text>
+                    <Image size={8} source={icons.credit_card} />
+                  </HStack>
+                </Pressable>
+                <Pressable _pressed={{ bgColor: colors.skeletonStart }}>
+                  <HStack
+                    mb={0}
+                    px={3}
+                    mx={spaces.xSpace * -1 - 6}
+                    py={2}
+                    borderBottomWidth={1}
+                    borderBottomColor={colors.dimBorder}
+                    justifyContent={"space-between"}
+                    alignItems={"center"}
+                  >
+                    <Text fontSize={"xs"}>Pay with Jazzcash</Text>
 
-                  <Image
-                    w={16}
-                    h={8}
-                    resizeMode={"contain"}
-                    source={icons.jazz_cash}
-                  />
-                </HStack>
-              </Pressable>
-              <Pressable _pressed={{ bgColor: colors.skeletonStart }}>
-                <HStack
-                  mb={0}
-                  px={3}
-                  mx={spaces.xSpace * -1 - 6}
-                  py={2}
-                  borderBottomWidth={1}
-                  borderBottomColor={colors.dimBorder}
-                  justifyContent={"space-between"}
-                  alignItems={"center"}
-                >
-                  <Text fontSize={"xs"}>Pay with Easypaisa</Text>
-                  <Box bg={"gray.300"} px={2} borderRadius={5}>
                     <Image
                       w={16}
-                      h={7}
+                      h={8}
                       resizeMode={"contain"}
-                      source={icons.easy_paisa}
+                      source={icons.jazz_cash}
                     />
-                  </Box>
-                </HStack>
-              </Pressable>
-            </VStack>
+                  </HStack>
+                </Pressable>
+                <Pressable _pressed={{ bgColor: colors.skeletonStart }}>
+                  <HStack
+                    mb={0}
+                    px={3}
+                    mx={spaces.xSpace * -1 - 6}
+                    py={2}
+                    borderBottomWidth={1}
+                    borderBottomColor={colors.dimBorder}
+                    justifyContent={"space-between"}
+                    alignItems={"center"}
+                  >
+                    <Text fontSize={"xs"}>Pay with Easypaisa</Text>
+                    <Box bg={"gray.300"} px={2} borderRadius={5}>
+                      <Image
+                        w={16}
+                        h={7}
+                        resizeMode={"contain"}
+                        source={icons.easy_paisa}
+                      />
+                    </Box>
+                  </HStack>
+                </Pressable>
+              </VStack>
+            )}
+
             {/* <TertiaryToneButton
               onPress={() => {}}
               title="Process Payment"
