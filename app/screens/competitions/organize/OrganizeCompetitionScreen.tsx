@@ -81,7 +81,7 @@ export default function OrganizeCompetitionScreen({ navigation, route }) {
   const validationSchema = Yup.object<DraftCompetition>().shape({
     category_title: Yup.string().required("Please select a category"),
     title: Yup.string().required("Please add competition title"),
-    description: Yup.string(),
+    description: Yup.string().nullable(),
     entry_fee: Yup.number().typeError("Enter a valid entry fee"),
     prize_money: Yup.number().typeError("Enter a valid prize money"),
     participants_allowed: Yup.number()
@@ -675,7 +675,7 @@ function FinancialBox({ cF, editMode }) {
               </HStack>
             </VStack>
             <TertiaryToneButton
-              // disabled={!cF.isValid}
+              opacity={!cF.isValid ? 0.7 : 1}
               onPress={() => cF.handleSubmit()}
               title={editMode ? "Update" : "Process Payment"}
               _text={{ style: { fontWeight: "bold" } }}

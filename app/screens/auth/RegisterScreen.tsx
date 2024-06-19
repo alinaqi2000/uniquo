@@ -213,7 +213,7 @@ export default function RegisterScreen({ navigation }) {
             </VStack>
 
             <TertiaryToneButton
-              disabled={!rF.isValid}
+              opacity={!rF.isValid ? 0.7 : 1}
               onPress={() => rF.handleSubmit()}
               w="100%"
               mt={50}

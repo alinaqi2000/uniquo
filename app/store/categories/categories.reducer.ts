@@ -13,22 +13,22 @@ export interface CategoriesState {
 }
 const initialState: CategoriesState = {
   top: [
-    new Category(1, "Sports", "sports"),
-    new Category(2, "Art & Culture", "art-culture"),
-    new Category(3, "Memes", "memes"),
+    // new Category(1, "Sports", "sports"),
+    // new Category(2, "Art & Culture", "art-culture"),
+    // new Category(3, "Memes", "memes"),
     // new Category(4, "Cars", "cars"),
   ],
   newC: [
-    new Category(2, "Art & Culture", "art-culture"),
-    new Category(1, "Sports", "sports"),
-    new Category(4, "Cars", "cars"),
-    new Category(3, "Memes", "memes"),
+    // new Category(2, "Art & Culture", "art-culture"),
+    // new Category(1, "Sports", "sports"),
+    // new Category(4, "Cars", "cars"),
+    // new Category(3, "Memes", "memes"),
   ],
   recent: [
-    new Category(3, "Memes", "memes"),
-    new Category(2, "Art & Culture", "art-culture"),
-    new Category(4, "Cars", "cars"),
-    new Category(1, "Sports", "sports"),
+    // new Category(3, "Memes", "memes"),
+    // new Category(2, "Art & Culture", "art-culture"),
+    // new Category(4, "Cars", "cars"),
+    // new Category(1, "Sports", "sports"),
   ],
 };
 

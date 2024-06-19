@@ -5,6 +5,8 @@ export default {
   // backgrounds
   primaryBg: "#151D24",
   secondaryBg: "#272d33",
+  boxBg: "#1F2933",
+
   overlay: "rgba(0, 0, 0, .6)",
   // texts
   primaryTextColor: "#F5F7FA",
@@ -18,6 +20,7 @@ export default {
   normalBorder: "#40484d",
   // skeleton
   skeletonStart: "rgba(192, 196, 193, .4)",
+  skeletonDim: "rgba(192, 196, 193, .2)",
   // ripple
   rippleBg: "rgba(192, 196, 192, .2)",
 

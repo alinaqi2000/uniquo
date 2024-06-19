@@ -40,7 +40,11 @@ import { BaseCompetition } from "../../../models/constants";
 import { points } from "../../../config/points";
 import { useFormik } from "formik";
 import { DraftCompetition } from "../../../models/form/DraftCompetition";
-import { setDraftCompetition } from "../../../store/competitions/competitions.actions";
+import {
+  setDraftCompetition,
+  setMyCompetitions,
+} from "../../../store/competitions/competitions.actions";
+import { toggleLoading } from "../../../store/app/app.actions";
 
 const TOP_THRESHOLD = 150;
 const BOTTOM_NEGATIVE_SPACE = 100;
@@ -57,7 +61,7 @@ export default function ProcessCompetitionPaymentScreen({ navigation, route }) {
 
   const cF = useFormik<DraftCompetition>({
     initialValues: DraftCompetition.fromBase(competition),
-    onSubmit: () => validateDates(cF.values),
+    onSubmit: () => publishCompetition(),
   });
 
   useEffect(() => {
@@ -67,6 +71,7 @@ export default function ProcessCompetitionPaymentScreen({ navigation, route }) {
       competition.stage === "payment_verification_pending" ||
       competition.stage === "pending_publish"
     ) {
+      cF.resetForm({ errors: {} });
       validateDates(findCompetition);
     }
 
@@ -92,8 +97,6 @@ export default function ProcessCompetitionPaymentScreen({ navigation, route }) {
   }, [navigation]);
 
   const validateDates = async (findCompetition) => {
-    cF.resetForm({ errors: {} });
-
     const response = await RequestService.post(
       "competitions/" + competition.id + "/verify_dates",
       { ...DraftCompetition.fromBase(findCompetition) },
@@ -105,6 +108,31 @@ export default function ProcessCompetitionPaymentScreen({ navigation, route }) {
         "Please update the competition before publishing."
       );
     }
+  };
+  const publishCompetition = async () => {
+    dispatch(toggleLoading());
+
+    const findCompetition = my.find((c) => c.id == competition.id);
+    await validateDates(findCompetition);
+    if (cF.isValid) {
+      const response = await RequestService.post(
+        "competitions/" + competition.id + "/publish",
+        {},
+        token
+      );
+      if (!response.error_type) {
+        const updatedMyCompetitions = UtilService.updateObject(
+          my,
+          "id",
+          cF.values._id,
+          response.data
+        );
+        dispatch(setMyCompetitions(updatedMyCompetitions));
+
+        UIService.showSuccessToast("Competition published successfully!");
+      }
+    }
+    dispatch(toggleLoading());
   };
   const isInvalid = (key: string) => {
     return cF.errors[key];
@@ -285,7 +313,11 @@ export default function ProcessCompetitionPaymentScreen({ navigation, route }) {
           </ScrollView>
         </View>
       </View>
-      <FinancialBox navigation={navigation} competition={stateCompetition} />
+      <FinancialBox
+        navigation={navigation}
+        form={cF}
+        competition={stateCompetition}
+      />
     </Feed>
   );
 }
@@ -304,7 +336,7 @@ function AlertBox(competition: BaseCompetition) {
               <HStack flexShrink={1} space={2} alignItems="center">
                 <Alert.Icon />
                 <Text fontSize="sm" fontWeight="medium" color="coolGray.800">
-                  Important!
+                  Note!
                 </Text>
               </HStack>
             </HStack>
@@ -320,7 +352,35 @@ function AlertBox(competition: BaseCompetition) {
           </VStack>
         </Alert>
       );
-
+    case "pending_publish":
+      return (
+        <Alert status="info" colorScheme="info">
+          <VStack space={1} flexShrink={1} w="100%">
+            <HStack
+              flexShrink={1}
+              space={2}
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              <HStack flexShrink={1} space={2} alignItems="center">
+                <Alert.Icon />
+                <Text fontSize="sm" fontWeight="medium" color="coolGray.800">
+                  Note!
+                </Text>
+              </HStack>
+            </HStack>
+            <Box pl={3}>
+              {points.competitions.pending_publish.map((p) => (
+                <ListItem
+                  color={colors.secondaryTextColor}
+                  fontSize={"xs"}
+                  text={p}
+                />
+              ))}
+            </Box>
+          </VStack>
+        </Alert>
+      );
       break;
 
     default:
@@ -330,8 +390,9 @@ function AlertBox(competition: BaseCompetition) {
 interface FinancialProps {
   competition: OrganizerCompetition;
   navigation?: any;
+  form?: any;
 }
-function FinancialBox({ competition, navigation }: FinancialProps) {
+function FinancialBox({ competition, form, navigation }: FinancialProps) {
   const { width, height } = useWindowDimensions();
   const { token } = useSelector((state: State) => state.app);
   const [loading, setLoading] = useState(false);
@@ -527,12 +588,49 @@ function FinancialBox({ competition, navigation }: FinancialProps) {
               </Text>
             </HStack>
             {competition.payment ? (
-              <Text>Paid!</Text>
+              <VStack>
+                <HStack
+                  mb={0}
+                  px={3}
+                  mx={spaces.xSpace * -1 - 6}
+                  py={2}
+                  borderBottomWidth={1}
+                  borderBottomColor={colors.dimBorder}
+                  justifyContent={"space-between"}
+                  alignItems={"center"}
+                >
+                  <Text fontSize={"xs"}>Paid With</Text>
+
+                  <Text>{competition.payment.method.title}</Text>
+                </HStack>
+                <HStack
+                  mb={0}
+                  px={3}
+                  mx={spaces.xSpace * -1 - 6}
+                  py={2}
+                  borderBottomWidth={1}
+                  borderBottomColor={colors.dimBorder}
+                  justifyContent={"space-between"}
+                  alignItems={"center"}
+                >
+                  <Text fontSize={"xs"}>Payment Date</Text>
+
+                  <Text>
+                    {UtilService.convertServerStrToTime(
+                      competition.payment.verified_at.date
+                    )}
+                  </Text>
+                </HStack>
+              </VStack>
             ) : (
               <VStack mb={4}>
                 <Pressable
                   onPress={() =>
-                    navigation.navigate("CardPayment", { competition })
+                    navigation.navigate("CardPayment", {
+                      competition,
+                      total: competition.financials.total_amount,
+                      paymentMode: "competition_hosting",
+                    })
                   }
                   _pressed={{ bgColor: colors.skeletonStart }}
                 >
@@ -596,12 +694,14 @@ function FinancialBox({ competition, navigation }: FinancialProps) {
                 </Pressable>
               </VStack>
             )}
-
-            {/* <TertiaryToneButton
-              onPress={() => {}}
-              title="Process Payment"
-              _text={{ style: { fontWeight: "bold" } }}
-            /> */}
+            {competition.stage === "pending_publish" ? (
+              <TertiaryToneButton
+                onPress={() => form.handleSubmit()}
+                mt={5}
+                title="Publish Now"
+                _text={{ style: { fontWeight: "bold" } }}
+              />
+            ) : null}
           </VStack>
         </VStack>
       </Box>

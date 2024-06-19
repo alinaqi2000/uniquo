@@ -1,6 +1,5 @@
 import axios from "axios";
 import { apiConfig } from "../config/apiConfig";
-import { Toast } from 'native-base';
 import UIService from "./UIService";
 interface Response {
   error_type: "verification" | "authentication" | "authorization" | "validation" | "server" | boolean;
@@ -16,7 +15,6 @@ export default class RequestService {
     }
 
     // validation errors
-
     if (error_type === "validation") {
       if (formikForm === null) {
         for (let key in messages) {
@@ -55,6 +53,9 @@ export default class RequestService {
 
   }
   static async get(uri: string, token: string = "", params: any = {}): Promise<Response> {
+    console.log('====================================');
+    console.log("URL:", apiConfig.apiURL);
+    console.log('====================================');
     var response: Response, headers = {};
     try {
       if (token) {
@@ -74,6 +75,9 @@ export default class RequestService {
     }
   }
   static async post(uri: string, data: any, token?: string, formikForm?: any): Promise<Response> {
+    console.log('====================================');
+    console.log("URL:", apiConfig.apiURL);
+    console.log('====================================');
     var response: Response, headers = {};
     try {
       if (token) {
@@ -98,6 +102,7 @@ export default class RequestService {
     }
   }
 
+
   static async put(uri: string, data: any, token?: string, formikForm?: any): Promise<Response> {
     var response: Response, headers = {};
     try {
@@ -112,7 +117,7 @@ export default class RequestService {
     } catch (error) {
 
       response = error.response.data
-      console.error("Error in POST request:", response);
+      console.error("Error in PUT request:", response);
       this.resolve_codes(error.response.status)
 
     } finally {
@@ -122,6 +127,32 @@ export default class RequestService {
       return response
     }
   }
+
+  static async patch(uri: string, data: any, token?: string, formikForm?: any): Promise<Response> {
+    var response: Response, headers = {};
+    try {
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`
+      }
+      const request = await axios.patch<Response>(apiConfig.apiURL + uri, data, {
+        headers
+      });
+      response = request.data
+
+    } catch (error) {
+
+      response = error.response.data
+      console.error("Error in PATCH request:", response);
+      this.resolve_codes(error.response.status)
+
+    } finally {
+
+      this.resolve_validation(response.error_type, response.messages, formikForm)
+
+      return response
+    }
+  }
+
   static async delete(uri: string, token: string = "", params: any = {}): Promise<Response> {
     var response: Response, headers = {};
     try {

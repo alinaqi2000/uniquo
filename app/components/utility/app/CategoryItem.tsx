@@ -8,6 +8,7 @@ import {
   View,
   IPressableProps,
   Text,
+  VStack,
 } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
 import colors from "../../../config/colors";
@@ -49,13 +50,14 @@ export default function CategoryItem(props: CatProps) {
         if (props.navigation) {
           props.navigation.push("CompetitionsFeed", {
             title: props.category.title,
+            id: props.category.id,
           });
         }
       }}
     >
       <Box
         shadow={3}
-        backgroundColor={"#1F2933"}
+        backgroundColor={colors.boxBg}
         px={3}
         py={3}
         rounded={15}
@@ -102,3 +104,20 @@ export default function CategoryItem(props: CatProps) {
     </Pressable>
   );
 }
+
+export const CategoryItemSkeleton = () => {
+  return (
+    <Box
+      shadow={3}
+      backgroundColor={colors.boxBg}
+      px={3}
+      py={3}
+      rounded={15}
+      w={120}
+      h={130}
+      mr={2}
+      mb={2}
+      overflow="hidden"
+    ></Box>
+  );
+};

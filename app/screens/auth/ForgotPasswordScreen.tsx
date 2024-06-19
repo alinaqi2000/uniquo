@@ -86,7 +86,7 @@ export default function ForgotPasswordScreen({ navigation }) {
               </Box>
             </VStack>
             <TertiaryToneButton
-              disabled={!eF.isValid}
+              opacity={!eF.isValid ? 0.7 : 1}
               onPress={() => eF.handleSubmit()}
               w="100%"
               mt={41}

@@ -48,6 +48,8 @@ build/
 local.properties
 *.iml
 *.hprof
+android/app/release
+android/app/debug
 
 # node.js
 #
@@ -76,3 +78,4 @@ dist/
 android/app/debug.keystore
 
 .env
+.env.production

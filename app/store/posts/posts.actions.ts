@@ -3,6 +3,7 @@ import { PostComment } from "../../models/PostComment";
 
 export const SET_FEED_POSTS = "SET_FEED_POSTS";
 export const SET_MY_POSTS = "SET_MY_POSTS";
+export const SET_WINNER_POSTS = "SET_WINNER_POSTS";
 export const SET_VOTED_POSTS = "SET_VOTED_POSTS";
 export const SET_REPORTED_POSTS = "SET_REPORTED_POSTS";
 export const SET_COMMENT_POST = "SET_COMMENT_POST";
@@ -27,6 +28,17 @@ export const setMyPosts = (posts: Post[]): SetMyPosts => ({
   type: SET_MY_POSTS,
   payload: posts,
 });
+
+
+type SetWinnerPosts = {
+  type: typeof SET_WINNER_POSTS;
+  payload: Post[];
+};
+export const setWinnerPosts = (posts: Post[]): SetWinnerPosts => ({
+  type: SET_WINNER_POSTS,
+  payload: posts,
+});
+
 
 type SetVotedPosts = {
   type: typeof SET_VOTED_POSTS;
@@ -82,6 +94,7 @@ export const pauseAllVideos = (): PauseAllVideos => ({
 export type PostsActions =
   | SetFeedPosts
   | SetMyPosts
+  | SetWinnerPosts
   | SetVotedPosts
   | SetReportedPosts
   | SetCommentPost

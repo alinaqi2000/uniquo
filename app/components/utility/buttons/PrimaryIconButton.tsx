@@ -10,9 +10,9 @@ interface ButtonProps extends IButtonProps {
 export default function PrimaryIconButton(props: ButtonProps) {
   return (
     <Button
-      backgroundColor={colors.primaryColor}
       variant="subtle"
-      colorScheme={"tertiary"}
+      backgroundColor="tertiary.400"
+      color={"primary.600"}
       endIcon={<Icon as={Ionicons} name={props.icon} size="lg" />}
       borderRadius="lg"
       {...props}

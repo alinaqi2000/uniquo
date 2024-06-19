@@ -47,7 +47,7 @@ export default (
     case SET_FEED_COMPETITIONS:
       return {
         ...state,
-        feed: action.payload,
+        feed: action.payload.map((c) => ({ ...c, bgColor: UIService.randomCompetitionColor() })),
       };
     case SET_DRAFT_COMPETITION:
       return {
@@ -67,7 +67,7 @@ export default (
     case SET_RECENT_COMPETITIONS:
       return {
         ...state,
-        recent: action.payload,
+        recent: action.payload.map((c) => ({ ...c, bgColor: UIService.randomCompetitionColor() })),
       };
 
     default:

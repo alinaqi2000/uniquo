@@ -1,4 +1,5 @@
 import { Category } from "./Category";
+import { Post } from "./Post";
 import { User } from "./User";
 import { COMPETITION_STAGE } from "./constants";
 import { DraftCompetition } from "./form/DraftCompetition";
@@ -31,8 +32,34 @@ export class Competition {
     public category: Category = new Category(),
     public organizer: User = new User(),
     public winner: User | null = null,
-    public bgColor: string = ""
+    public bgColor: string = "",
+    public myDraftPosts: Post[] = [],
+    public myPost: Post | null = null
   ) {
   }
 
+  static fromData(data: any) {
+    return new Competition(data.id,
+      data.participated,
+      data.title,
+      data.description,
+      data.slug,
+      data.paid,
+      data.financials,
+      data.participations,
+      data.participants_allowed,
+      data.voting_start_at,
+      data.voting_time,
+      data.announcement_at,
+      data.announcement_time,
+      data.stage,
+      data.expired,
+      data.category,
+      data.organizer,
+      data.winner,
+      data.bgColor,
+      data.myDraftPosts,
+      data.myPost
+    );
+  }
 }

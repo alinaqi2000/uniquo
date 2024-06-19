@@ -9,6 +9,7 @@ import {
 import Navigation from "./Navigation";
 import LoadingSpinner from "../utility/app/LoadingSpinner";
 import FlashMessage from "react-native-flash-message";
+import { useConnectionStateListener } from "ably/react";
 
 interface Props {
   token: string;
@@ -27,6 +28,14 @@ export default function Main({ token, firstTime }: Props) {
   useEffect(() => {
     dispatch(setFirstTime(firstTime));
   }, [firstTime]);
+
+  useConnectionStateListener("connected", () => {
+    console.log("Connected to Ably!");
+  });
+  useConnectionStateListener("failed", () => {
+    console.log("Failed to connect Ably!");
+  });
+
   return (
     <>
       <LoadingSpinner />

@@ -1,7 +1,6 @@
 import { Box, HStack, ScrollView, Text, VStack } from "native-base";
 import React from "react";
 import Modal from "../../../components/layout/Modal";
-import PrimaryButton from "../../../components/utility/buttons/PrimaryButton";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { useDispatch } from "react-redux";
@@ -12,10 +11,14 @@ import { State } from "../../../store";
 import FormInput from "../../../components/utility/forms/FormInput";
 import { OrganizerCompetition } from "../../../models/OrganizerCompetition";
 import colors from "../../../config/colors";
-import spaces from "../../../config/spaces";
 import UIService from "../../../services/UIService";
-import { setMyCompetitions } from "../../../store/competitions/competitions.actions";
+import {
+  setFeedCompetitions,
+  setMyCompetitions,
+} from "../../../store/competitions/competitions.actions";
 import UtilService from "../../../services/UtilService";
+import TertiaryToneButton from "../../../components/utility/buttons/TertiaryToneButton";
+import { PaymentMode } from "../../../models/PaymentMode";
 
 interface CardPaymentForm {
   card_number: string;
@@ -25,10 +28,18 @@ interface CardPaymentForm {
 }
 export default function CardPaymentModal({ navigation, route }) {
   const { token } = useSelector((state: State) => state.app);
-  const { my } = useSelector((state: State) => state.competitions);
+  const { my, feed } = useSelector((state: State) => state.competitions);
   const dispatch = useDispatch();
 
-  const { competition }: { competition: OrganizerCompetition } = route.params;
+  const {
+    competition,
+    total,
+    paymentMode,
+  }: {
+    total: number;
+    paymentMode: PaymentMode;
+    competition: OrganizerCompetition;
+  } = route.params;
 
   const validationSchema = Yup.object().shape({
     card_number: Yup.string()
@@ -80,7 +91,51 @@ export default function CardPaymentModal({ navigation, route }) {
   };
   const cardPayment = async () => {
     dispatch(toggleLoading());
+    switch (paymentMode) {
+      case "competition_participation":
+        participationPayment();
+        break;
+      case "competition_hosting":
+        competitionPayment();
+        break;
+      default:
+        break;
+    }
 
+    navigation.replace("PaymentSuccess", {
+      competition,
+      paymentMode,
+    });
+  };
+
+  const participationPayment = async () => {
+    const response = await RequestService.post(
+      "payments/competition/card_participation",
+      {
+        competition_id: competition.id,
+        card_number: cF.values.card_number,
+        card_name: cF.values.card_name,
+        expiry_date: cF.values.expiry_date,
+        cvv: cF.values.cvv,
+      },
+      token,
+      cF
+    ).finally(() => {
+      dispatch(toggleLoading());
+    });
+
+    if (!response.error_type) {
+      const updatedCompetitions = UtilService.updateObject(
+        feed,
+        "id",
+        competition.id,
+        response.data
+      );
+      dispatch(setFeedCompetitions(updatedCompetitions));
+    }
+  };
+
+  const competitionPayment = async () => {
     const response = await RequestService.post(
       "payments/competition/card",
       {
@@ -104,10 +159,9 @@ export default function CardPaymentModal({ navigation, route }) {
         response.data
       );
       dispatch(setMyCompetitions(updatedMyCompetitions));
-
-      navigation.replace("PaymentSuccess", { competition });
     }
   };
+
   return (
     <Modal
       navigation={navigation}
@@ -139,7 +193,7 @@ export default function CardPaymentModal({ navigation, route }) {
                 color={"tertiary.700"}
                 fontWeight={"semibold"}
               >
-                {UIService.currency(competition.financials.total_amount)}
+                {UIService.currency(total)}
               </Text>
             </HStack>
             <VStack mt={5} space={5} w="100%">
@@ -204,9 +258,14 @@ export default function CardPaymentModal({ navigation, route }) {
                   />
                 </Box>
               </HStack>
-              <PrimaryButton
+              <TertiaryToneButton
+                opacity={!cF.isValid ? 0.7 : 1}
                 onPress={() => cF.handleSubmit()}
-                title="Pay Now"
+                title={
+                  paymentMode === "competition_participation"
+                    ? "Participate Now"
+                    : "Pay Now"
+                }
               />
             </VStack>
           </VStack>

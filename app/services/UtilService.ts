@@ -13,12 +13,18 @@ export default class UtilService {
     static async get(key: string) {
         return JSON.parse(await AsyncStorage.getItem(key));
     }
+
     static convertDateTimeFormat(isoDate: Date) {
         const date = moment(isoDate);
 
         const formattedDate = date.format('DD.MM.YYYY HH:mm');
 
         return formattedDate;
+    }
+
+    static convertServerStrToTime(isoDate: string) {
+        return moment(isoDate, "YYYY-MM-DD, HH:mm A").format("h:mm A MMM DD, YYYY").toString();
+
     }
 
     static makeDateTimeFromServer(date: string) {
@@ -99,5 +105,10 @@ export default class UtilService {
                 return obj;
             }
         });
+    };
+    static deleteFromArray(array, item) {
+        const itemIndex = array.findIndex(item);
+        array.splice(itemIndex, 1);
+        return array;
     };
 }

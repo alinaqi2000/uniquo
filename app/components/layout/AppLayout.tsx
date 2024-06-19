@@ -1,18 +1,18 @@
 import { StatusBar, View } from "native-base";
 import { KeyboardAvoidingView } from "react-native";
 import colors from "../../config/colors";
-import NotifactionProvider from "../hoc/NotifactionProvider";
+import NotificationProvider from "../hoc/NotificationProvider";
 interface Props {
   children: JSX.Element | JSX.Element[];
 }
 
 export default function AppLayout(props: Props) {
   return (
-    <NotifactionProvider>
+    <NotificationProvider>
       <StatusBar animated={true} backgroundColor={colors.primaryBg} />
       {/* <KeyboardAvoidingView behavior={"padding"}> */}
       <>{props.children}</>
       {/* </KeyboardAvoidingView> */}
-    </NotifactionProvider>
+    </NotificationProvider>
   );
 }

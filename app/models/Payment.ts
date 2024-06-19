@@ -10,7 +10,7 @@ export class Payment {
     public device: string,
     public discount: number,
     public amount: number,
-    public verified_at: string,
+    public verified_at: { date: string, relative: string },
     public user: User,
     public method: PaymentMethod,
   ) { }

@@ -10,14 +10,13 @@ import {
   Pressable,
   Link,
   Image,
+  Skeleton,
 } from "native-base";
 import { Image as IMG } from "react-native";
 
 import { Post } from "../../../models/Post";
 import UserAvatar from "../images/UserAvatar";
 import {
-  EvilIcons,
-  FontAwesome5,
   Fontisto,
   MaterialIcons,
 } from "@expo/vector-icons";
@@ -33,12 +32,14 @@ import {
 } from "../../../store/posts/posts.actions";
 import { PostMedia } from "../../../models/PostMedia";
 import PostVideo from "./PostVideo";
+import Pluralize from "pluralize";
+import ImageView from "react-native-image-viewing";
 
 interface Props {
   post: Post;
   navigation?: any;
 }
-// const SilderItem = (props: any) => {
+// const SliderItem = (props: any) => {
 //   const [width, setWidth] = useState(0);
 //   const [height, setHeight] = useState(0);
 //   const dimensions = useWindowDimensions();
@@ -63,45 +64,9 @@ interface Props {
 //   );
 // };
 
-const SilderItem = ({ item, index }: { item: PostMedia; index: number }) => {
-  const [width, setWidth] = useState(0);
-  const [height, setHeight] = useState(0);
-  const dimensions = useWindowDimensions();
-
-  useEffect(() => {
-    IMG.getSize(item.url, (w, h) => {
-      setHeight(360);
-      const newW = (360 * w) / h;
-
-      setWidth(newW);
-    });
-  }, []);
-
-  return (
-    <HStack justifyContent={"center"}>
-      {item.type == "image" ? (
-        <Image
-          h={height}
-          w={width}
-          alt={`${item.id}`}
-          source={{ uri: item.url }}
-        />
-      ) : (
-        <PostVideo uri={item.url} index={index} />
-      )}
-    </HStack>
-  );
-};
 const STR_LEN = 80;
 
 export default function PostItem({ post, navigation }: Props) {
-  const greaterDesc = post.description.length > STR_LEN;
-  const [fullDesc, setFullDesc] = useState(false);
-  const [index, setIndex] = React.useState(1);
-  const [pause, setPause] = React.useState(false);
-  const isCarousel = React.useRef(null);
-
-  const dimensions = useWindowDimensions();
   const dispatch = useDispatch();
 
   return (
@@ -127,7 +92,7 @@ export default function PostItem({ post, navigation }: Props) {
               {post.user.username}
             </Text>
             <Text fontSize={"xs"} color={colors.dimTextColor}>
-              {post.posted_at}
+              {post.posted_at.relative}
             </Text>
           </VStack>
         </HStack>
@@ -144,77 +109,11 @@ export default function PostItem({ post, navigation }: Props) {
       </HStack>
       {/* Description */}
       <VStack my={1} mx={spaces.xSpace}>
-        <Text fontSize={14} color={colors.dimTextColor}>
-          {greaterDesc
-            ? fullDesc
-              ? post.description
-              : post.description.substring(0, STR_LEN) + "..."
-            : post.description}
-
-          {greaterDesc &&
-            (fullDesc ? (
-              <Link
-                style={{ transform: [{ translateY: 3 }, { translateX: 4 }] }}
-                _text={{
-                  style: {
-                    color: colors.dimTextColor,
-                  },
-                }}
-                onPress={() => setFullDesc(false)}
-              >
-                less
-              </Link>
-            ) : (
-              <Link
-                style={{ transform: [{ translateY: 3 }, { translateX: 4 }] }}
-                _text={{
-                  style: {
-                    color: colors.dimTextColor,
-                  },
-                }}
-                onPress={() => setFullDesc(true)}
-              >
-                more
-              </Link>
-            ))}
-        </Text>
+        <PostDescriptionItem post={post} />
       </VStack>
       <VStack>
-        {post.images.length && (
-          <Box
-            mt={1}
-            borderColor={colors.secondaryBg}
-            borderTopWidth={1}
-            borderBottomWidth={1}
-          >
-            <Box
-              background={colors.secondaryBg}
-              px={2}
-              py={1}
-              position={"absolute"}
-              zIndex="111"
-              right={2}
-              rounded={12}
-              top={2}
-            >
-              <Text fontSize={"xs"}>
-                {index} / {post.images.length}
-              </Text>
-            </Box>
-            <Carousel
-              layoutCardOffset={9}
-              ref={isCarousel}
-              vertical={false}
-              data={post.images}
-              renderItem={({ item }: { item: any }) => (
-                <SilderItem item={item} index={index} />
-              )}
-              sliderWidth={dimensions.width}
-              itemWidth={dimensions.width}
-              onSnapToItem={(i) => setIndex(i + 1)}
-              useScrollView={true}
-            />
-          </Box>
+        {post.media.length && (
+          <PostMediaItems post={post} />
         )}
         <HStack
           borderColor={colors.secondaryBg}
@@ -231,7 +130,7 @@ export default function PostItem({ post, navigation }: Props) {
               size={"sm"}
             />
             <Text fontSize={"xs"} color={colors.dimTextColor}>
-              {post.votes} votes
+              {Pluralize("vote", +post.votes, true)}
             </Text>
           </HStack>
           <Pressable
@@ -257,3 +156,244 @@ export default function PostItem({ post, navigation }: Props) {
     </Box>
   );
 }
+export const PostDescriptionItem = ({ post }: { post: Post }) => {
+  const greaterDesc = post.description.length > STR_LEN;
+  const [fullDesc, setFullDesc] = useState(false);
+
+  return <Text fontSize={"sm"} lineHeight={"sm"} my={2} color={colors.dimTextColor}>
+    {greaterDesc
+      ? fullDesc
+        ? post.description
+        : post.description.substring(0, STR_LEN) + "..."
+      : post.description}
+
+    {greaterDesc &&
+      (fullDesc ? (
+        <Link
+          style={{ transform: [{ translateY: 3 }, { translateX: 4 }] }}
+          _text={{
+            style: {
+              color: colors.dimTextColor,
+            },
+          }}
+          onPress={() => setFullDesc(false)}
+        >
+          less
+        </Link>
+      ) : (
+        <Link
+          style={{ transform: [{ translateY: 3 }, { translateX: 4 }] }}
+          _text={{
+            style: {
+              color: colors.dimTextColor,
+            },
+          }}
+          onPress={() => setFullDesc(true)}
+        >
+          more
+        </Link>
+      ))}
+  </Text>;
+}
+export const PostMediaItems = ({ post }: { post: Post }) => {
+  const [index, setIndex] = React.useState(1);
+  const [pause, setPause] = React.useState(false);
+  const isCarousel = React.useRef(null);
+
+  const dimensions = useWindowDimensions();
+
+  return <Box
+    mt={1}
+    borderColor={colors.secondaryBg}
+    borderTopWidth={1}
+    borderBottomWidth={1}
+  >
+    <Box
+      background={colors.secondaryBg}
+      px={2}
+      py={1}
+      position={"absolute"}
+      zIndex="111"
+      right={2}
+      rounded={12}
+      top={2}
+    >
+      <Text fontSize={"xs"}>
+        {index} / {post.media.length}
+      </Text>
+    </Box>
+    <Carousel
+      layoutCardOffset={9}
+      ref={isCarousel}
+      vertical={false}
+      data={post.media}
+      renderItem={({ item }: { item: any }) => (
+        <SliderItem item={item} index={index - 1} urls={[...post.media.map((i) => ({ uri: i.url }))]} />
+      )}
+      sliderWidth={dimensions.width}
+      itemWidth={dimensions.width}
+      onSnapToItem={(i) => setIndex(i + 1)}
+      useScrollView={true}
+    />
+  </Box>
+}
+const SliderItem = ({ item, index, urls }: { item: PostMedia; index: number, urls: { uri: string }[] }) => {
+  const [width, setWidth] = useState(0);
+  const [height, setHeight] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [visible, setIsVisible] = useState(false);
+  const dimensions = useWindowDimensions();
+
+  useEffect(() => {
+    IMG.getSize(item.url, (w, h) => {
+      setHeight(360);
+      const newW = (360 * w) / h;
+
+      setWidth(newW);
+    });
+  }, []);
+
+  return (
+    <HStack justifyContent={"center"}>
+      {item.type == "image" ? (
+        <>
+          <Pressable onPress={() => setIsVisible(true)}>
+
+            <Image
+              h={loading ? 0 : height}
+              w={loading ? 0 : width}
+              onLoadEnd={() => setLoading(false)}
+
+              alt={`${item.id}`}
+              source={{ uri: item.url }}
+            />
+          </Pressable>
+          <ImageView
+            images={urls}
+            imageIndex={index}
+            visible={visible}
+            onRequestClose={() => setIsVisible(false)}
+          />
+          {loading ?
+            <Skeleton
+              borderRadius={5}
+              h={height} w={width}
+              startColor={colors.skeletonDim} />
+            : null
+          }
+        </>
+      ) : (
+        <PostVideo uri={item.url} index={index} />
+      )}
+    </HStack>
+  );
+};
+
+export const PostItemSkeleton = () => {
+  return (
+    <Box my={2}>
+      {/* Header */}
+      <HStack
+        mx={spaces.xSpace}
+        justifyContent={"space-between"}
+        alignItems="center"
+      >
+        <HStack alignItems={"center"}>
+          {/* Avatar */}
+          <Skeleton
+            w={"45px"}
+            h={"45px"}
+            rounded={"full"}
+            startColor={colors.skeletonStart}
+          />
+          <VStack ml={2} space={2}>
+            <Skeleton
+              w={"80px"}
+              h={3}
+              rounded={"full"}
+              startColor={colors.skeletonStart}
+            />
+            <Skeleton
+              w={"50px"}
+              ml={1}
+              h={2}
+              rounded={"full"}
+              startColor={colors.skeletonStart}
+            />
+          </VStack>
+        </HStack>
+        <HStack>
+          {/* more */}
+          <Skeleton
+            w={"20px"}
+            h={2}
+            rounded={"full"}
+            startColor={colors.skeletonStart}
+          />
+        </HStack>
+      </HStack>
+      {/* Description */}
+      <VStack my={2} mx={spaces.xSpace} space={1}>
+        {/* text */}
+        <Skeleton
+          w={"80%"}
+          h={2}
+          rounded={"full"}
+          startColor={colors.skeletonStart}
+        />
+        <Skeleton
+          w={"50%"}
+          h={2}
+          rounded={"full"}
+          startColor={colors.skeletonStart}
+        />
+      </VStack>
+      <VStack>
+        {/* images */}
+        <Skeleton
+          w={"100%"}
+          h={"300px"}
+          rounded={"5"}
+          startColor={colors.skeletonDim}
+        />
+        <HStack
+          borderColor={colors.secondaryBg}
+          px={spaces.xSpace}
+          py={2}
+          justifyContent="space-between"
+        >
+          <HStack alignItems={"center"} space={2}>
+            {/* votes */}
+            <Skeleton
+              w={"20px"}
+              h={"20px"}
+              rounded={"lg"}
+              startColor={colors.skeletonDim}
+            />
+            <Skeleton
+              w={"60px"}
+              h={2}
+              rounded={"sm"}
+              startColor={colors.skeletonDim}
+            />
+          </HStack>
+          <HStack alignItems={"center"} space={2}>
+            {/* Comments */}
+            <Skeleton
+              w={"20px"}
+              h={"20px"}
+              rounded={"lg"}
+              startColor={colors.skeletonDim}
+            />
+            <Skeleton
+              w={"60px"}
+              h={2}
+              rounded={"sm"}
+              startColor={colors.skeletonDim}
+            />
+          </HStack>
+        </HStack>
+      </VStack>
+    </Box>
+  );
+};

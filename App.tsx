@@ -10,6 +10,12 @@ import Main from "./app/components/core/Main";
 import { LogBox, StyleSheet } from "react-native";
 import { themeConfig } from "./app/config/themeConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Ably from "ably";
+import {
+  AblyProvider,
+  useChannel,
+  useConnectionStateListener,
+} from "ably/react";
 
 // if (__DEV__) {
 //   import("./ReactotronConfig").then(() =>
@@ -18,6 +24,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 // }
 
 export default function App() {
+  const client = new Ably.Realtime({
+    key: process.env.ABLY_KEY,
+  });
+
+
   const [fontsLoaded] = useFonts({
     "Rubik-Regular": require("./assets/fonts/Rubik/static/Rubik-Regular.ttf"),
     "Rubik-Bold": require("./assets/fonts/Rubik/static/Rubik-Bold.ttf"),
@@ -41,7 +52,7 @@ export default function App() {
         const jsonValue = await AsyncStorage.getItem("firstTime");
         if (JSON.parse(jsonValue) == "no") setFirstTime(false);
         else setFirstTime(true);
-      } catch (e) {}
+      } catch (e) { }
     }
     get();
   }, []);
@@ -59,22 +70,24 @@ export default function App() {
   const theme = extendTheme(themeConfig);
 
   return (
-    <Provider store={store}>
-      <NotificationTokenProvider>
-        {(expoPushToken) => (
-          <SafeAreaProvider>
-            <SafeAreaView
-              style={styles.droidSafeArea}
-              onLayout={onLayoutRootView}
-            >
-              <NativeBaseProvider theme={theme}>
-                <Main token={expoPushToken} firstTime={firstTime} />
-              </NativeBaseProvider>
-            </SafeAreaView>
-          </SafeAreaProvider>
-        )}
-      </NotificationTokenProvider>
-    </Provider>
+    <AblyProvider client={client}>
+      <Provider store={store}>
+        <NotificationTokenProvider>
+          {(expoPushToken) => (
+            <SafeAreaProvider>
+              <SafeAreaView
+                style={styles.droidSafeArea}
+                onLayout={onLayoutRootView}
+              >
+                <NativeBaseProvider theme={theme}>
+                  <Main token={expoPushToken} firstTime={firstTime} />
+                </NativeBaseProvider>
+              </SafeAreaView>
+            </SafeAreaProvider>
+          )}
+        </NotificationTokenProvider>
+      </Provider>
+    </AblyProvider>
   );
 }
 const styles = StyleSheet.create({

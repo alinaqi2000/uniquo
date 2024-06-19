@@ -1,6 +1,6 @@
 import { View, Text } from "react-native";
 import React, { useEffect } from "react";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from "../../screens/dashboard/HomeScreen";
 import Onboarding01Screen from "../../screens/onboarding/Onboarding01Screen";
@@ -32,12 +32,36 @@ import MyCompetitionsScreen from "../../screens/competitions/MyCompetitionsScree
 import ProcessCompetitionPaymentScreen from "../../screens/competitions/organize/ProcessCompetitionPaymentScreen";
 import CardPaymentModal from "../../screens/competitions/organize/CardPaymentModal";
 import PaymentSuccessModal from "../../screens/competitions/organize/PaymentSuccessModal";
+import * as Linking from "expo-linking";
+import ParticipateCompetitionScreen from "../../screens/competitions/organize/ParticipateCompetitionScreen";
+import CreatePostScreen from "../../screens/posts/CreatePostScreen";
 
 const Stack = createNativeStackNavigator();
 
 export default function Navigation() {
   const app = useSelector((state: State) => state.app);
   const dispatch = useDispatch();
+  const navigation = useNavigation();
+  const url = Linking.useURL();
+  if (url) {
+    const { hostname, path, queryParams } = Linking.parse(url);
+    console.log("====================================");
+    console.log(path, hostname, queryParams);
+    console.log("====================================");
+  }
+
+  // const _handleDeepLink = async (url) => {
+  //   const route = Linking.parse(url).path;
+
+  //   if (route === "/notifications") {
+  //     navigation.navigate("Notification" as never);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   const unsubscribe = Linking.addEventListener("url", _handleDeepLink);
+  //   return () => unsubscribe.remove();
+  // }, []);
 
   useEffect(() => {
     async function get() {
@@ -156,6 +180,14 @@ export default function Navigation() {
                   title: route.params?.title || "Process Payment",
                 })}
               />
+              <Stack.Screen
+                name="Detail&ParticipateCompetition"
+                component={ParticipateCompetitionScreen}
+                options={({ route }: any) => ({
+                  ...navigationOptions,
+                  title: route.params?.title || "Participate",
+                })}
+              />
               <Stack.Group
                 screenOptions={{
                   presentation: "transparentModal",
@@ -195,12 +227,20 @@ export default function Navigation() {
                 options={({ route }: any) => ({
                   ...navigationOptions,
                   headerTitleAlign: "center",
-                  title: "#" + route.params.title,
+                  title: route.params.title,
                   // headerRight: () => (
                   //   <Pressable onPress={() => alert("This is a button!")}>
                   //     <Icon />
                   //   </Pressable>
                   // ),
+                })}
+              />
+              <Stack.Screen
+                name="CreatePost"
+                component={CreatePostScreen}
+                options={({ route }: any) => ({
+                  ...navigationOptions,
+                  title: route.params?.title || "Create Post",
                 })}
               />
               <Stack.Screen

@@ -4,5 +4,6 @@ export class PostMedia {
     public type: "image" | "video",
     public url: string,
     public thumbnail: string = ""
-  ) {}
+  ) { }
+
 }

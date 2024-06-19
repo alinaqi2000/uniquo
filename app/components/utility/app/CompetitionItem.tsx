@@ -1,32 +1,18 @@
-import React, { useEffect, useState } from "react";
-import {
-  Icon,
-  Box,
-  HStack,
-  View,
-  Text,
-  VStack,
-  Skeleton,
-  useDisclose,
-  Actionsheet,
-} from "native-base";
-import {
-  Feather,
-  FontAwesome5,
-  Ionicons,
-  MaterialIcons,
-} from "@expo/vector-icons";
+import React from "react";
+import { Icon, Box, HStack, View, Text, VStack, Skeleton } from "native-base";
+import { Feather, FontAwesome5, MaterialIcons } from "@expo/vector-icons";
 import colors from "../../../config/colors";
 import { Pressable, IPressableProps } from "native-base";
 import UserAvatar from "../images/UserAvatar";
 import { BaseCompetition } from "../../../models/constants";
 import UIService from "../../../services/UIService";
 import { styles } from "../../../config/styles";
+import Pluralize from "pluralize";
 
 interface Props extends IPressableProps {
   competition: BaseCompetition;
   navigation?: any;
-  openActionSheet: (competition: BaseCompetition) => void;
+  openActionSheet?: (competition: BaseCompetition) => void;
 }
 
 export default function CompetitionItem(props: Props) {
@@ -39,11 +25,19 @@ export default function CompetitionItem(props: Props) {
               return props.navigation.push("Detail&ProcessCompetitionPayment", {
                 competition: props.competition,
               });
-              break;
 
+            case "pending_publish":
+              return props.navigation.push("Detail&ProcessCompetitionPayment", {
+                competition: props.competition,
+              });
+            case "participation_period":
+              return props.navigation.push("Detail&ParticipateCompetition", {
+                competition: props.competition,
+              });
             default:
               return props.navigation.push("PostsFeed", {
-                title: props.competition.slug,
+                competition: props.competition,
+                title: props.competition.title,
               });
               break;
           }
@@ -71,7 +65,11 @@ export default function CompetitionItem(props: Props) {
                   #{props.competition.slug}
                 </Text>
                 <Pressable
-                  onPress={() => props.openActionSheet(props.competition)}
+                  onPress={() => {
+                    if (props.openActionSheet) {
+                      props.openActionSheet(props.competition);
+                    }
+                  }}
                   {...styles.rippleStyles}
                 >
                   <Icon
@@ -91,7 +89,11 @@ export default function CompetitionItem(props: Props) {
                     color={colors.primaryTextColor}
                   />
                   <Text color={colors.primaryTextColor} fontSize={"xs"}>
-                    {props.competition.participations} participants
+                    {Pluralize(
+                      "participant",
+                      props.competition.participations,
+                      true
+                    )}
                   </Text>
                 </HStack>
                 <HStack space={0} alignItems={"center"}>
@@ -171,14 +173,14 @@ export default function CompetitionItem(props: Props) {
 }
 
 const DateStatus = (competition: BaseCompetition) => {
-  const { title, date } = UIService.competitionDateAndTitle(competition);
+  const { title, sub_title } = UIService.competitionStatus(competition);
   return (
     <VStack>
       <Text color={colors.primaryTextColor} textAlign={"right"} fontSize={"9"}>
         {title}
       </Text>
       <HStack space={1} alignItems={"center"}>
-        {date !== "PENDING" ? (
+        {sub_title !== "PENDING" ? (
           <Icon
             as={Feather}
             name="calendar"
@@ -192,7 +194,7 @@ const DateStatus = (competition: BaseCompetition) => {
           textAlign={"right"}
           fontSize={"10"}
         >
-          {date}
+          {sub_title}
         </Text>
       </HStack>
     </VStack>

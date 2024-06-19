@@ -1,0 +1,1 @@
+export type PaymentMode = "competition_hosting" | "competition_participation";

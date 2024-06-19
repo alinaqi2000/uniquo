@@ -136,7 +136,7 @@ export default function PasswordResetScreen({ navigation }) {
               </Box>
             </VStack>
             <TertiaryToneButton
-              disabled={!pF.isValid}
+              opacity={!pF.isValid ? 0.7 : 1}
               onPress={() => pF.handleSubmit()}
               w="100%"
               mt={41}

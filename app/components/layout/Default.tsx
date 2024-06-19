@@ -2,7 +2,7 @@ import { Container, ScrollView, StatusBar, View } from "native-base";
 import { Animated, KeyboardAvoidingView, Platform } from "react-native";
 import colors from "../../config/colors";
 import spaces from "../../config/spaces";
-import NotifactionProvider from "../hoc/NotifactionProvider";
+import NotifactionProvider from "../hoc/NotificationProvider";
 interface Props {
   children: JSX.Element | JSX.Element[];
 }

@@ -2,6 +2,7 @@
   "expo": {
     "name": "Uniquo",
     "slug": "uniquo",
+    "scheme": "uniquo_app",
     "version": "0.0.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -27,7 +28,24 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.uniquo.app"
+      "package": "com.uniquo.app",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "http",
+              "host": "*.uniquo.online",
+              "pathPrefix": "/records"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -38,7 +56,13 @@
       }
     },
     "plugins": [
-      "expo-localization"
+      "expo-localization",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your uniqueness."
+        }
+      ]
     ]
   }
 }

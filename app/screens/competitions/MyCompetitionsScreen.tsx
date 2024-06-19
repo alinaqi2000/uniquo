@@ -35,7 +35,6 @@ import UIService from "../../services/UIService";
 import ActionItem from "../../components/utility/app/common/ActionItem";
 import HeaderActionButton from "../../components/utility/buttons/HeaderActionButton";
 import { useWindowDimensions } from "react-native";
-import Lottie from "../../components/utility/animated/Lottie";
 import { gifs } from "../../config/assets";
 import PrimaryIconButton from "../../components/utility/buttons/PrimaryIconButton";
 

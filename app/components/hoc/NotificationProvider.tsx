@@ -16,7 +16,7 @@ Notifications.setNotificationHandler({
 interface Props {
   children: JSX.Element | JSX.Element[];
 }
-export default function NotifactionProvider(props: Props) {
+export default function NotificationProvider(props: Props) {
   const navigation = useNavigation();
   useEffect(() => {
     const subscription = Notifications.addNotificationResponseReceivedListener(

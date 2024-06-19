@@ -183,7 +183,7 @@ export default function LoginScreen({ navigation }) {
               </HStack>
             </VStack>
             <TertiaryToneButton
-              disabled={!lF.isValid}
+              opacity={!lF.isValid ? 0.7 : 1}
               onPress={() => lF.handleSubmit()}
               w="100%"
               mt={50}
