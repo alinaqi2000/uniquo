@@ -68,6 +68,18 @@ export default function CreatePostScreen({ navigation, route }) {
     onSubmit: () => publishPost(),
   });
 
+
+  useEffect(() => {
+    getPost()
+
+    const interval = setInterval(() => {
+      getPost()
+    }, 10000);
+    return () => {
+      clearInterval(interval)
+    }
+  }, [])
+
   useEffect(() => {
     const findCompetition = feed.find((c) => c.id == competition.id);
     if (statePost) {
@@ -253,6 +265,18 @@ export default function CreatePostScreen({ navigation, route }) {
     }
   };
 
+
+  const getPost = async () => {
+
+    const response = await RequestService.get("posts/single/" + statePost.id, token);
+
+    if (!response.error_type) {
+      putPostInCompetition(Post.fromData(response.data));
+      setStatePost(response.data);
+      pF.setFieldValue("description", response.data.description);
+    }
+  };
+
   return (
     <AppLayout>
 
@@ -339,7 +363,7 @@ export default function CreatePostScreen({ navigation, route }) {
       </AlertDialog>
 
 
-      <View flex={1} w={"100%"} justifyContent={"space-between"} h={height}>
+      <VStack w={"100%"} justifyContent={"space-between"} h={height - 50}>
         <Box>
           <PostTextInput
             w="100%"
@@ -352,49 +376,68 @@ export default function CreatePostScreen({ navigation, route }) {
               onBlur: pF.handleBlur("description"),
             }}
           />
+          <ScrollView>
+            <VStack mx={spaces.xSpace} mt={"5"} space={5}>
+              <PrimaryIconButton
+                variant={"outline"}
+                bg={colors.secondaryColor}
+                _text={{ color: "gray.800" }}
+                _icon={{ color: "gray.800" }}
+                icon="camera-outline"
+                disabled={statePost && statePost.media.length >= 3}
+                title={(statePost ? statePost.media.length : 0) + "/3 Add Media"}
+                onPress={pickImage}
+              />
+              {
+                statePost &&
+                statePost.media.map((mediaItem, idx) => <UploadMedia
+                  deleteMedia={deleteMedia}
+                  key={`item-${idx}`}
+                  mediaItem={mediaItem}
+                  getPost={getPost}
+                />)
+              }
+              {pickerAssets.map((asset, idx) => <UploadMedia
+                key={`media-${idx}`}
+                getPost={getPost}
+                setPost={(p) => {
+                  putPostInCompetition(p)
+                  setPickerAssets([])
+                }}
+                pickerAsset={asset} uploadUrl={`posts_${asset.type}/${stateCompetition.id}/draft${statePost ? `/${statePost.id}` : ""}`}
+              />)}
+            </VStack>
+          </ScrollView>
         </Box>
-        <ScrollView>
-          <VStack mx={spaces.xSpace} mt={"5"} space={5}>
-            <PrimaryIconButton
-              icon="camera-outline"
-              disabled={statePost && statePost.media.length >= 3}
-              title={(statePost ? statePost.media.length : 0) + "/3 Add Media"}
-              onPress={pickImage}
-            />
-            {
-              statePost &&
-              statePost.media.map((mediaItem, idx) => <UploadMedia
-                deleteMedia={deleteMedia}
-                key={`item-${idx}`}
-                mediaItem={mediaItem}
-              />)
-            }
-            {pickerAssets.map((asset, idx) => <UploadMedia
-              key={`media-${idx}`}
-              setPost={(p) => {
-                putPostInCompetition(p)
-                setPickerAssets([])
-              }}
-              pickerAsset={asset} uploadUrl={`posts_${asset.type}/${stateCompetition.id}/draft${statePost ? `/${statePost.id}` : ""}`}
-            />)}
-          </VStack>
-        </ScrollView>
 
-        <HStack my={5} w={width} justifyContent={"center"} space={10}>
-          <PrimaryOutlineButton
-            minW={"35%"}
-            title={statePost ? "Update Draft" : "Save Draft"}
-            onPress={() => saveDraft()}
-          />
-          <TertiaryToneButton _disabled={{ backgroundColor: colors.dimBorder }} disabled={!(statePost && statePost.media.length)} minW={"45%"} title="Publish For Approval" onPress={() => {
-            if (statePost && pF.values.description !== statePost.description) {
-              setCancelOpen(true);
-              return true;
-            }
-            setPublishOpen(true)
-          }} />
-        </HStack>
-      </View>
+        <Box>
+
+          {
+            !(statePost && statePost.media.length) ?
+
+              <HStack mx={spaces.xSpace} h={"16px"}>
+
+                <Text size={"xs"} textAlign={"center"} color={"red.400"}>Upload at least one media item to publish</Text>
+              </HStack>
+
+              : null
+          }
+          <HStack my={5} w={width} justifyContent={"center"} space={10}>
+            <PrimaryOutlineButton
+              minW={"35%"}
+              title={statePost ? "Update Draft" : "Save Draft"}
+              onPress={() => saveDraft()}
+            />
+            <TertiaryToneButton _disabled={{ backgroundColor: colors.dimBorder }} disabled={!(statePost && statePost.media.length)} minW={"45%"} title="Publish For Approval" onPress={() => {
+              if (statePost && pF.values.description !== statePost.description) {
+                setCancelOpen(true);
+                return true;
+              }
+              setPublishOpen(true)
+            }} />
+          </HStack>
+        </Box>
+      </VStack>
     </AppLayout>
   );
 }

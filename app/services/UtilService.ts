@@ -111,4 +111,9 @@ export default class UtilService {
         array.splice(itemIndex, 1);
         return array;
     };
+    static moveTrueToTop(array, key) {
+        const trueArray = array.filter(item => item[key] === true);
+        const falseArray = array.filter(item => item[key] !== true);
+        return trueArray.concat(falseArray);
+    };
 }

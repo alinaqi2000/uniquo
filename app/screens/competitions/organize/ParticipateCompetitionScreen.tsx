@@ -77,6 +77,10 @@ export default function ParticipateCompetitionScreen({ navigation, route }) {
     setStateCompetition(findCompetition);
   }, [feed]);
 
+  useEffect(() => {
+    getCompetition();
+  }, []);
+  
   const deleteDraft = async (post: Post) => {
     dispatch(toggleLoading());
 
@@ -131,6 +135,24 @@ export default function ParticipateCompetitionScreen({ navigation, route }) {
   };
   const isInvalid = (key: string) => {
     return cF.errors[key];
+  };
+
+
+  const getCompetition = async () => {
+
+    const response = await RequestService.get("competitions/single/" + stateCompetition.id, token);
+
+    if (!response.error_type) {
+      const updatedCompetitions = UtilService.updateObject(
+        feed,
+        "id",
+        competition.id,
+        response.data
+      );
+
+      setStateCompetition(response.data);
+      dispatch(setFeedCompetitions(updatedCompetitions));
+    }
   };
   return (
     <Feed>
@@ -249,7 +271,7 @@ export default function ParticipateCompetitionScreen({ navigation, route }) {
                   </VStack>
 
                   {/* My Draft Posts */}
-                  {stateCompetition.myDraftPosts.length ? (
+                  {stateCompetition.myDraftPosts && stateCompetition.myDraftPosts.length ? (
                     <Box mt={"sm"} mr={0} mx={spaces.xSpace * -1}>
                       <HStack
                         ml={spaces.xSpace}
@@ -262,7 +284,7 @@ export default function ParticipateCompetitionScreen({ navigation, route }) {
                           my={3}
                           fontSize={"md"}
                         >
-                          My Drafts ({stateCompetition.myDraftPosts.length}/3)
+                          My Drafts ({stateCompetition.myDraftPosts ? stateCompetition.myDraftPosts.length : 0}/3)
                         </Text>
                         <Box
                           h={1}
@@ -383,10 +405,13 @@ const PostItem = (props: { post: Post, navigation: any }) => {
 
       </HStack>
     </HStack>
-    <VStack my={1} mx={spaces.xSpace}>
-      <PostDescriptionItem post={props.post} />
-    </VStack>
-    <VStack>
+    {
+      props.post.description !== "" ?
+        <VStack mt={1} mx={spaces.xSpace}>
+          <PostDescriptionItem post={props.post} />
+        </VStack>
+        : null}
+    <VStack mt={3}>
       {props.post.media.length && (
         <PostMediaItems post={props.post} />
       )}

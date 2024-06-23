@@ -11,13 +11,17 @@ import {
   Link,
   Image,
   Skeleton,
+  Badge,
 } from "native-base";
 import { Image as IMG } from "react-native";
 
 import { Post } from "../../../models/Post";
 import UserAvatar from "../images/UserAvatar";
 import {
+  EvilIcons,
+  FontAwesome6,
   Fontisto,
+  Ionicons,
   MaterialIcons,
 } from "@expo/vector-icons";
 import colors from "../../../config/colors";
@@ -34,40 +38,33 @@ import { PostMedia } from "../../../models/PostMedia";
 import PostVideo from "./PostVideo";
 import Pluralize from "pluralize";
 import ImageView from "react-native-image-viewing";
+import { BaseCompetition } from "../../../models/constants";
 
 interface Props {
   post: Post;
   navigation?: any;
+  competition?: BaseCompetition;
+  openActionSheet?: (post: Post) => void;
+
 }
-// const SliderItem = (props: any) => {
-//   const [width, setWidth] = useState(0);
-//   const [height, setHeight] = useState(0);
-//   const dimensions = useWindowDimensions();
-
-//   useEffect(() => {
-//     IMG.getSize(props.item.url, (w, h) => {
-//       setWidth(w);
-//       const newH = (dimensions.width * h) / w;
-//
-//       setHeight(newH);
-//     });
-//   }, []);
-
-//   return (
-//     <Box>
-//       <Image
-//         h={height}
-//         alt={`${props.item.id}`}
-//         source={{ uri: props.item.url }}
-//       />
-//     </Box>
-//   );
-// };
-
 const STR_LEN = 80;
 
-export default function PostItem({ post, navigation }: Props) {
+export default function PostItem({ post, competition, navigation, openActionSheet }: Props) {
   const dispatch = useDispatch();
+  var status = null;
+  var winner = null;
+  
+  if (post.votedByMe) {
+    status = <Badge borderRadius={5} _text={{ fontSize: 10 }} colorScheme="tertiary">VOTED</Badge>
+  }
+  if (post.winner) {
+    winner = <Icon
+      as={EvilIcons}
+      color={colors.secondaryColor}
+      name={"trophy"}
+      size={"lg"}
+    />
+  }
 
   return (
     <Box my={2}>
@@ -96,14 +93,23 @@ export default function PostItem({ post, navigation }: Props) {
             </Text>
           </VStack>
         </HStack>
-        <HStack>
-          <Pressable>
-            <Icon
-              size={"md"}
-              color={"white"}
-              as={MaterialIcons}
-              name="more-horiz"
-            />
+        <HStack space={3}>
+          {winner}
+          {status}
+          <Pressable
+            onPress={() => {
+              if (openActionSheet) {
+                openActionSheet(post);
+              }
+            }}
+          ><HStack w={"36px"} h={"24px"} justifyContent={"center"} alignItems={"center"} >
+              <Icon
+                size={"md"}
+                color={"white"}
+                as={MaterialIcons}
+                name="more-horiz"
+              />
+            </HStack>
           </Pressable>
         </HStack>
       </HStack>
@@ -115,43 +121,47 @@ export default function PostItem({ post, navigation }: Props) {
         {post.media.length && (
           <PostMediaItems post={post} />
         )}
-        <HStack
-          borderColor={colors.secondaryBg}
-          // borderBottomWidth={1}
-          px={spaces.xSpace}
-          py={2}
-          justifyContent="space-between"
-        >
-          <HStack alignItems={"center"} space={2}>
-            <Icon
-              as={MaterialIcons}
-              color={colors.dimTextColor}
-              name="how-to-vote"
-              size={"sm"}
-            />
-            <Text fontSize={"xs"} color={colors.dimTextColor}>
-              {Pluralize("vote", +post.votes, true)}
-            </Text>
-          </HStack>
-          <Pressable
-            onPress={() => {
-              dispatch(pauseAllVideos());
-              dispatch(setCommentPost(post));
-            }}
-          >
-            <HStack alignItems={"center"} space={2}>
-              <Icon
-                as={Fontisto}
-                color={colors.dimTextColor}
-                name="comments"
-                size={"sm"}
-              />
-              <Text fontSize={"xs"} color={colors.dimTextColor}>
-                Comments
-              </Text>
+        {
+          competition && competition.stage === "completed" ?
+            <HStack
+              borderColor={colors.secondaryBg}
+              // borderBottomWidth={1}
+              px={spaces.xSpace}
+              py={2}
+              justifyContent="space-between"
+            >
+              <HStack alignItems={"center"} space={2}>
+                <Icon
+                  as={MaterialIcons}
+                  color={colors.dimTextColor}
+                  name="how-to-vote"
+                  size={"sm"}
+                />
+                <Text fontSize={"xs"} color={colors.dimTextColor}>
+                  {Pluralize("vote", +post.votes, true)}
+                </Text>
+              </HStack>
+              <Pressable
+                onPress={() => {
+                  dispatch(pauseAllVideos());
+                  dispatch(setCommentPost(post));
+                }}
+              >
+                <HStack alignItems={"center"} space={2}>
+                  <Icon
+                    as={Fontisto}
+                    color={colors.dimTextColor}
+                    name="comments"
+                    size={"sm"}
+                  />
+                  <Text fontSize={"xs"} color={colors.dimTextColor}>
+                    Comments
+                  </Text>
+                </HStack>
+              </Pressable>
             </HStack>
-          </Pressable>
-        </HStack>
+            : null
+        }
       </VStack>
     </Box>
   );
@@ -228,7 +238,13 @@ export const PostMediaItems = ({ post }: { post: Post }) => {
       vertical={false}
       data={post.media}
       renderItem={({ item }: { item: any }) => (
-        <SliderItem item={item} index={index - 1} urls={[...post.media.map((i) => ({ uri: i.url }))]} />
+        <SliderItem item={item} index={index - 1} urls={[...post.media.map((i) => {
+          if (i.type === 'image') {
+            return { uri: i.url }
+          }
+
+        }
+        )]} />
       )}
       sliderWidth={dimensions.width}
       itemWidth={dimensions.width}
@@ -245,17 +261,20 @@ const SliderItem = ({ item, index, urls }: { item: PostMedia; index: number, url
   const dimensions = useWindowDimensions();
 
   useEffect(() => {
-    IMG.getSize(item.url, (w, h) => {
-      setHeight(360);
-      const newW = (360 * w) / h;
+    if (item.type === "image") {
 
-      setWidth(newW);
-    });
+      IMG.getSize(item.url, (w, h) => {
+        setHeight(360);
+        const newW = (360 * w) / h;
+
+        setWidth(newW);
+      });
+    }
   }, []);
 
   return (
     <HStack justifyContent={"center"}>
-      {item.type == "image" ? (
+      {item.type === "image" ? (
         <>
           <Pressable onPress={() => setIsVisible(true)}>
 
@@ -269,7 +288,7 @@ const SliderItem = ({ item, index, urls }: { item: PostMedia; index: number, url
             />
           </Pressable>
           <ImageView
-            images={urls}
+            images={urls.filter(i => i !== undefined)}
             imageIndex={index}
             visible={visible}
             onRequestClose={() => setIsVisible(false)}

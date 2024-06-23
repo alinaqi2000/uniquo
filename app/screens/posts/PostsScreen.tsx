@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FlatList, HStack, ScrollView, Text, View, VStack } from "native-base";
+import { Actionsheet, FlatList, HStack, ScrollView, Text, View, VStack } from "native-base";
 
 import Feed from "../../components/layout/AppLayout";
 import { useSelector } from "react-redux";
@@ -18,14 +18,20 @@ import { User } from "../../models/User";
 import RequestService from "../../services/RequestService";
 import { BaseCompetition } from "../../models/constants";
 import UtilService from "../../services/UtilService";
+import ActionItem from "../../components/utility/app/common/ActionItem";
+import { toggleLoading } from "../../store/app/app.actions";
+import UIService from "../../services/UIService";
 
 export default function PostsScreen({ navigation, route }) {
   const { user, token } = useSelector((state: State) => state.app);
   const competitions = useSelector((state: State) => state.competitions);
-  const { feed } = useSelector((state: State) => state.posts);
+  const { feed, commentPost } = useSelector((state: State) => state.posts);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
   const { competition }: { competition: BaseCompetition } = route.params;
+
+  const [sheetPost, setSheetPost] =
+    useState<Post | null>(null);
 
   // useEffect(() => {
   //   dispatch(
@@ -148,8 +154,42 @@ export default function PostsScreen({ navigation, route }) {
       dispatch(setFeedPosts(response.data));
     }
   };
+
+  const votePost = async () => {
+    if (sheetPost) {
+      dispatch(toggleLoading())
+      const response = await RequestService.post(
+        `posts/${competition.id}/vote/${sheetPost.id}`, {},
+        token
+      ).finally(() => dispatch(toggleLoading()));
+
+      setSheetPost(null);
+
+      if (!response.error_type) {
+        UIService.showSuccessToast("Your vote has been casted. Wait for the announcement to see the results.", "Vote Casted!")
+        fetchCompetitions();
+      } else {
+        UIService.showErrorToast(response.messages["error"])
+      }
+    }
+  }
+
   return (
     <Feed>
+      <Actionsheet
+        isOpen={sheetPost !== null}
+        onClose={() => setSheetPost(null)}
+      >
+        <Actionsheet.Content bg={colors.primaryBg}>
+          <ActionItem
+            text="Vote"
+            icon="check"
+            onPress={votePost}
+          />
+
+        </Actionsheet.Content>
+      </Actionsheet>
+
       <VStack mx={spaces.xSpace} py={3}>
         <Text color={colors.primaryTextColor} fontWeight={"semibold"}>
           #{competition.slug}
@@ -169,14 +209,17 @@ export default function PostsScreen({ navigation, route }) {
       ) : (
         <FlatList
           showsVerticalScrollIndicator={false}
-          data={feed} // your array should go here
+          data={UtilService.moveTrueToTop(feed, "winner")} // your array should go here
           renderItem={({ item }: { item: Post }) => (
-            <PostItem post={item} navigation={navigation} />
+            <PostItem post={item}
+              competition={competition}
+              navigation={navigation}
+              openActionSheet={setSheetPost} />
           )}
         />
       )}
 
-      <PostCommentSheet />
+      {commentPost ? <PostCommentSheet /> : null}
     </Feed>
   );
 }

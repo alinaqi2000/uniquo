@@ -1,3 +1,4 @@
+import { Competition } from "./Competition";
 import { PostMedia } from "./PostMedia";
 import { User } from "./User";
 
@@ -12,8 +13,11 @@ export class Post {
     public votes: number,
     public winner: boolean,
     public approved: boolean,
+    public votedByMe: boolean,
     public user: User,
-    public media: PostMedia[]
+    public media: PostMedia[],
+    public competition: Competition,
+
   ) { }
 
   static fromData(data: any) {
@@ -24,8 +28,10 @@ export class Post {
       data.votes,
       data.winner,
       data.approved,
+      data.votedByMe,
       data.user,
       data.media,
+      data.competition,
     );
   }
 }

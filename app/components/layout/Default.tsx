@@ -13,7 +13,7 @@ export default function Default(props: Props) {
       <StatusBar animated={true} backgroundColor={colors.primaryBg} />
       <Animated.ScrollView>
         <KeyboardAvoidingView behavior={"padding"}>
-          <View mx={spaces.xSpace}>{props.children}</View>
+          <View mx={spaces.xSpace} flex={1}>{props.children}</View>
         </KeyboardAvoidingView>
       </Animated.ScrollView>
     </NotifactionProvider>

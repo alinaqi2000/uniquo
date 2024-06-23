@@ -7,7 +7,10 @@ export class PostComment {
     public type: "comment" | "reply",
     public text: string,
     public by: User,
-    public date: string,
+    public date: {
+      relative: string,
+      date: string
+    },
     public replies: PostComment[] = []
-  ) {}
+  ) { }
 }

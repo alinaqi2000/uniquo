@@ -30,86 +30,89 @@ import {
   setReplyTo,
 } from "../../../store/posts/posts.actions";
 import { useKeyboard } from "../../hooks/useKeyboard";
-import CommentItem from "./CommentItem";
+import CommentItem, { CommentItemSkeleton } from "./CommentItem";
+import RequestService from "../../../services/RequestService";
+import UtilService from "../../../services/UtilService";
 
 export default function PostCommentSheet() {
+  const { token } = useSelector((state: State) => state.app);
   const [comment, setComment] = useState("");
   const dispatch = useDispatch();
   const { width, height } = useWindowDimensions();
   const keyboard = useKeyboard();
   const inpRef = useRef(null);
-  const toast = useToast();
+  const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
   const { commentPost, postComments, replyTo } = useSelector(
     (state: State) => state.posts
   );
   const { user } = useSelector((state: State) => state.app);
 
   useEffect(() => {
-    dispatch(
-      setPostComments([
-        new PostComment(
-          1,
-          1,
-          "comment",
-          "this is comment",
-          new User(
-            "Ali Musawi",
-            "ali@a.com",
-            "ali.musawi",
-            "http://i.imgur.com/74sByqd.jpg"
-          ),
-          "12 min"
-        ),
-        new PostComment(
-          2,
-          1,
-          "comment",
-          "this is second comment",
-          new User(
-            "Imran Ali",
-            "imran@a.com",
-            "ali.imran",
-            "https://www.energetixfitnessstudio.com/admin/uploads/team/1574939358.jpg"
-          ),
-          "16 hrs"
-        ),
-      ])
-    );
-  }, []);
+    if (commentPost) {
+      getComments();
+    }
+    return () => {
+      dispatch(setCommentPost(null))
+      dispatch(setPostComments([]))
+      dispatch(setReplyTo(null))
+    }
+  }, [])
+
+
 
   useEffect(() => {
     !!replyTo && inpRef.current.focus();
   }, [replyTo]);
 
   const sendComment = async () => {
-    if (!!comment) {
-      const newComment = new PostComment(
-        !!replyTo ? replyTo.replies.length + 1 : postComments.length + 1,
-        commentPost.id,
-        !!replyTo ? "reply" : "comment",
-        comment,
-        new User(user.full_name, user.email, user.username, user.avatar),
-        "now"
-      );
-      if (replyTo) {
-        const index = postComments.findIndex((c) => c.id === replyTo.id);
+    setSending(true);
 
-        const newComments = postComments;
-        newComments[index].replies.push(newComment);
-        dispatch(setPostComments([...newComments]));
-      } else {
-        dispatch(setPostComments([...postComments, newComment]));
+    if (!!comment) {
+      var url = `posts/${commentPost.id}/comments`;
+      if (replyTo) {
+        url = `posts/${commentPost.id}/comments/${replyTo.id}`
       }
+
+
+      const response = await RequestService.post(
+        url,
+        { text: comment },
+        token
+      ).finally(() => setSending(false));
+
+      if (replyTo) {
+        replyTo.replies = [...replyTo.replies, response.data];
+
+
+        const updatedComments = UtilService.updateObject(
+          postComments,
+          "id",
+          replyTo.id,
+          replyTo
+        );
+
+        dispatch(setPostComments(updatedComments))
+      } else {
+        dispatch(setPostComments([...postComments, response.data]))
+      }
+
       inpRef.current.blur();
       setComment("");
       dispatch(setReplyTo(null));
     } else {
       inpRef.current.focus();
-      // toast.show({
-      //   description: "Please type something...",
-      //   avoidKeyboard: true,
-      //   zIndex:9
-      // });
+    }
+  };
+
+
+  const getComments = async () => {
+
+    const response = await RequestService.get("posts/" + commentPost.id + "/comments", token)
+      .finally(() => setLoading(false));
+
+    if (!response.error_type) {
+      dispatch(setPostComments([...response.data]));
     }
   };
 
@@ -122,20 +125,25 @@ export default function PostCommentSheet() {
         onClose={() => dispatch(setCommentPost(null))}
       >
         <Actionsheet.Content
-          pb={keyboard + 70}
+          pb={keyboard + 100}
           bg={colors.primaryBg}
           h={height * 0.7}
         >
           <>
             {!!commentPost && (
-              <VStack space={2} px={spaces.xSpace}>
+              <VStack space={2} w={width} px={spaces.xSpace}>
                 <HStack w={"100%"}>
                   <Text fontSize={"md"}>Comments ({postComments.length})</Text>
                 </HStack>
-                <FlatList
-                  data={postComments}
-                  renderItem={({ item }) => <CommentItem comment={item} />}
-                />
+                {loading ? UtilService.generateNumbersArray(10).map(i => <CommentItemSkeleton key={`skele-${i}`} />) :
+
+                  <FlatList
+                    data={postComments}
+                    showsVerticalScrollIndicator={false}
+                    renderItem={({ item }) => <CommentItem key={`comment-${item.id}`} comment={item} />}
+                  />
+
+                }
               </VStack>
             )}
             <VStack
@@ -164,25 +172,25 @@ export default function PostCommentSheet() {
                   blurOnSubmit={true}
                   placeholder="Type here..."
                   placeholderTextColor={colors.inputPlaceholder}
-                  w={width * 0.8 - spaces.xSpace * 2}
+                  w={width * 0.78 - spaces.xSpace * 2}
                   borderWidth={0}
                   fontSize="md"
                   _focus={{ style: { backgroundColor: colors.primaryBg } }}
                   defaultValue={comment}
                   onChangeText={(newText) => setComment(newText)}
                 />
-                <Pressable onPress={sendComment}>
+                <Pressable onPress={sendComment} disabled={sending}>
                   <Box
                     justifyContent={"center"}
                     alignItems="center"
-                    w={width - width * 0.8 - spaces.xSpace * 2}
+                    w={width - width * 0.78 - spaces.xSpace * 2}
                     minH={50}
                   >
                     <Text
                       fontWeight={!!comment ? "bold" : "normal"}
                       fontSize="md"
                     >
-                      Send
+                      {sending ? "Sending" : "Send"}
                     </Text>
                   </Box>
                 </Pressable>

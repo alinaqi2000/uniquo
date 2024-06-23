@@ -54,51 +54,22 @@ export default function HomeScreen({ navigation }) {
   const dispatch = useDispatch();
   const dimensions = useWindowDimensions();
   useEffect(() => {
+    fetchNotifications();
     fetchCategories();
     fetchWinnerPosts();
 
-    dispatch(
-      setNotifications([
-        new Notification(
-          1,
-          "Competition creation success",
-          "ali.naqi, you have created a competition",
-          false,
-          "my_competitions",
-          [],
-          "now"
-        ),
-        new Notification(
-          2,
-          "Competition updation success",
-          "ali.naqi, you have updated a competition",
-          false,
-          "my_competitions",
-          [],
-          "6 hrs"
-        ),
-        new Notification(
-          3,
-          "New participation alert!",
-          "ali.naqi, you have new participation in your a competition",
-          true,
-          "my_competitions",
-          [],
-          "1 day"
-        ),
-        new Notification(
-          4,
-          "Competition started!",
-          "ali.naqi, your competition has been started",
-          true,
-          "my_competitions",
-          [],
-          "2 days"
-        ),
-      ])
-    );
   }, []);
 
+  const fetchNotifications = async () => {
+    const response = await RequestService.get(
+      "notifications",
+      token
+    );
+
+    if (!response.error_type) {
+      dispatch(setNotifications(response.data));
+    }
+  };
   const fetchCategories = async () => {
     setLoadingCategories(true);
 
@@ -113,7 +84,6 @@ export default function HomeScreen({ navigation }) {
       dispatch(setRecentCategories(response.data.recent));
     }
   };
-
   const fetchWinnerPosts = async () => {
     setLoadingWinnerPosts(true);
 
@@ -179,6 +149,7 @@ export default function HomeScreen({ navigation }) {
               onPress={() =>
                 navigation.push("CompetitionsFeed", {
                   title: "Explore",
+                  mode: "explore",
                 })
               }
               shadow={"6"}

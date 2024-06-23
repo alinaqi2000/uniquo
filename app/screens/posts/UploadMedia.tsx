@@ -24,11 +24,12 @@ interface UploadMediaProps {
     mediaItem?: PostMedia
     uploadUrl?: string;
     pickerAsset?: ImagePickerAsset
+    getPost: () => void
     setPost?: (post: Post | Competition) => void
     deleteMedia?: (mediaItem: PostMedia) => void
 
 }
-export default function UploadMedia({ mediaItem, uploadUrl, pickerAsset, setPost, deleteMedia }: UploadMediaProps) {
+export default function UploadMedia({ mediaItem, uploadUrl, pickerAsset, setPost, getPost, deleteMedia }: UploadMediaProps) {
     const { token } = useSelector((state: State) => state.app);
     const [visible, setIsVisible] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(5);
@@ -47,10 +48,10 @@ export default function UploadMedia({ mediaItem, uploadUrl, pickerAsset, setPost
         try {
 
             const formData = new FormData();
-            formData.append("image", {
+            formData.append(pickerAsset.type, {
                 uri,
-                name: 'image.jpg', // Set a filename
-                type: 'image/jpeg', // Set the image type based on URI
+                name: pickerAsset.fileName ? pickerAsset.fileName : pickerAsset.type === "image" ? "image.jpg" : "video.mp4",
+                type: pickerAsset.mimeType,
             });
 
             const response = axios.post(apiConfig.apiURL + uploadUrl, formData, {
@@ -76,8 +77,9 @@ export default function UploadMedia({ mediaItem, uploadUrl, pickerAsset, setPost
         } catch (error) {
             setUploadError(true);
             UIService.showErrorToast("File could not be uploaded, You can try later.", "Upload Failure!")
-
         }
+
+        getPost()
     };
 
 
@@ -94,17 +96,9 @@ export default function UploadMedia({ mediaItem, uploadUrl, pickerAsset, setPost
         >
             <HStack justifyContent={"space-between"} alignItems={"center"}>
                 <HStack alignItems={"center"} space={4}>
-                    <Pressable onPress={() => setIsVisible(true)}>
-                        <MediaItem
-                            index={1}
-                            item={mediaItem}
-                        />
-                    </Pressable>
-                    <ImageView
-                        images={[{ uri: media.url }]}
-                        imageIndex={0}
-                        visible={visible}
-                        onRequestClose={() => setIsVisible(false)}
+                    <MediaItem
+                        index={1}
+                        item={mediaItem}
                     />
                 </HStack>
                 <Pressable onPress={() => deleteMedia(mediaItem)}
@@ -150,17 +144,18 @@ export default function UploadMedia({ mediaItem, uploadUrl, pickerAsset, setPost
                 <CircularProgress
                     value={uploadError ? 0 : uploadProgress}
                     radius={40}
-                    inActiveStrokeOpacity={0.5}
-                    activeStrokeWidth={15}
-                    inActiveStrokeWidth={20}
-                    progressValueStyle={{ fontWeight: '500', color: colors.dimTextColor }}
-                    inActiveStrokeColor={uploadError ? "red" : colors.dimTextColor}
-                    activeStrokeSecondaryColor={uploadError ? "red" : "green"}
-                    activeStrokeColor={uploadError ? "red" : "green"}
-                    dashedStrokeConfig={{
-                        count: 20,
-                        width: 2,
-                    }}
+                    valueSuffix={'%'}
+                    inActiveStrokeOpacity={1}
+                    activeStrokeWidth={12}
+                    inActiveStrokeWidth={24}
+                    progressValueStyle={{ fontSize: 10, fontWeight: '500', color: colors.primaryTextColor }}
+                    inActiveStrokeColor={uploadError ? "red" : colors.primaryColor}
+                    activeStrokeSecondaryColor={uploadError ? "red" : colors.secondaryColor}
+                    activeStrokeColor={uploadError ? "red" : colors.secondaryColor}
+                // dashedStrokeConfig={{
+                //     count: 20,
+                //     width: 3,
+                // }}
                 />
                 {/* <Pressable onPress={() => deleteMedia(mediaItem)}
                     {...styles.rippleStyles}

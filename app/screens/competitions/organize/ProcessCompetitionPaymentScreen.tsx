@@ -68,8 +68,8 @@ export default function ProcessCompetitionPaymentScreen({ navigation, route }) {
     const findCompetition = my.find((c) => c.id == competition.id);
 
     if (
-      competition.stage === "payment_verification_pending" ||
-      competition.stage === "pending_publish"
+      findCompetition.stage === "payment_verification_pending" ||
+      findCompetition.stage === "pending_publish"
     ) {
       cF.resetForm({ errors: {} });
       validateDates(findCompetition);
@@ -78,23 +78,30 @@ export default function ProcessCompetitionPaymentScreen({ navigation, route }) {
     setStateCompetition(findCompetition);
   }, [my]);
   useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <BackButton onPress={() => navigation.navigate("MyCompetitions")} />
-      ),
-      headerRight: () => (
-        <HeaderActionButton
-          icon="edit"
-          onPress={() =>
-            navigation.push("OrganizeCompetition", {
-              competition: stateCompetition,
-              title: "Edit Competition",
-            })
-          }
-        />
-      ),
-    });
-  }, [navigation]);
+    const findCompetition = my.find((c) => c.id == competition.id);
+
+    if (
+      findCompetition.stage === "payment_verification_pending" ||
+      findCompetition.stage === "pending_publish"
+    ) {
+      navigation.setOptions({
+        headerLeft: () => (
+          <BackButton onPress={() => navigation.navigate("MyCompetitions")} />
+        ),
+        headerRight: () => (
+          <HeaderActionButton
+            icon="edit"
+            onPress={() =>
+              navigation.push("OrganizeCompetition", {
+                competition: findCompetition,
+                title: "Edit Competition",
+              })
+            }
+          />
+        ),
+      });
+    }
+  }, [navigation, my]);
 
   const validateDates = async (findCompetition) => {
     const response = await RequestService.post(

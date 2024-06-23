@@ -83,7 +83,6 @@ const SilderItem = (props: any) => {
     </HStack>
   );
 };
-const STR_LEN = 80;
 
 export default function PostSingleImageItem({ post, navigation }: Props) {
   const dimensions = useWindowDimensions();
@@ -92,12 +91,16 @@ export default function PostSingleImageItem({ post, navigation }: Props) {
   return (
     <Pressable onPress={() => navigation.push("MyPosts", { post })}>
       <HStack justifyContent={"center"}>
-        <Image
-          h={dimensions.width / 3}
-          w={dimensions.width / 3}
-          alt={`${post.id}`}
-          source={{ uri: post.images[0].url }}
-        />
+        {
+          post.media.length ?
+            <Image
+              h={dimensions.width / 3}
+              w={dimensions.width / 3}
+              alt={`${post.id}`}
+              source={{ uri: post.media[0].url }}
+            />
+            : null
+        }
       </HStack>
     </Pressable>
   );

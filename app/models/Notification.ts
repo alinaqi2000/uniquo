@@ -6,6 +6,9 @@ export class Notification {
     public read: boolean,
     public usedfor: string,
     public data: string | [],
-    public date: string
-  ) {}
+    public date: {
+      relative: string,
+      date: string
+    }
+  ) { }
 }

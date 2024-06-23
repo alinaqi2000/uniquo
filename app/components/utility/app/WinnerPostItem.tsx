@@ -31,8 +31,9 @@ export default function WinnerPostItem({ post, navigation }: PostProps) {
     <Pressable
       onPress={() => {
         if (navigation) {
-          navigation.push("CompetitionsFeed", {
-            id: post.id,
+          navigation.push("PostsFeed", {
+            title: post.competition.title,
+            competition: post.competition,
           });
         }
       }}

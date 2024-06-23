@@ -2,7 +2,9 @@ import { Post } from "../../models/Post";
 import { PostComment } from "../../models/PostComment";
 
 export const SET_FEED_POSTS = "SET_FEED_POSTS";
+export const SET_PROFILE_FEED_POSTS = "SET_PROFILE_FEED_POSTS";
 export const SET_MY_POSTS = "SET_MY_POSTS";
+export const SET_MY_VOTED_POSTS = "SET_MY_VOTED_POSTS";
 export const SET_WINNER_POSTS = "SET_WINNER_POSTS";
 export const SET_VOTED_POSTS = "SET_VOTED_POSTS";
 export const SET_REPORTED_POSTS = "SET_REPORTED_POSTS";
@@ -20,12 +22,30 @@ export const setFeedPosts = (posts: Post[]): SetFeedPosts => ({
   payload: posts,
 });
 
+type SetProfileFeedPosts = {
+  type: typeof SET_PROFILE_FEED_POSTS;
+  payload: Post[];
+};
+export const setProfileFeedPosts = (posts: Post[]): SetProfileFeedPosts => ({
+  type: SET_PROFILE_FEED_POSTS,
+  payload: posts,
+});
+
 type SetMyPosts = {
   type: typeof SET_MY_POSTS;
   payload: Post[];
 };
 export const setMyPosts = (posts: Post[]): SetMyPosts => ({
   type: SET_MY_POSTS,
+  payload: posts,
+});
+
+type SetMyVotedPosts = {
+  type: typeof SET_MY_VOTED_POSTS;
+  payload: Post[];
+};
+export const setMyVotedPosts = (posts: Post[]): SetMyVotedPosts => ({
+  type: SET_MY_VOTED_POSTS,
   payload: posts,
 });
 
@@ -93,7 +113,9 @@ export const pauseAllVideos = (): PauseAllVideos => ({
 
 export type PostsActions =
   | SetFeedPosts
+  | SetProfileFeedPosts
   | SetMyPosts
+  | SetMyVotedPosts
   | SetWinnerPosts
   | SetVotedPosts
   | SetReportedPosts

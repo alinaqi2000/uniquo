@@ -60,6 +60,9 @@ export default function CompetitionFeedScreen({ navigation, route }) {
   };
   const setupCompetitions = async () => {
     switch (mode) {
+      case "explore":
+        fetchCompetitions(`competitions/explore`);
+        break;
       case "participate":
         fetchCompetitions(`competitions/participation`);
         break;

@@ -1,4 +1,4 @@
-import { Box, FlatList, HStack, Pressable, Text, VStack } from "native-base";
+import { Box, FlatList, HStack, Pressable, Skeleton, Text, VStack } from "native-base";
 import { useState } from "react";
 import { useWindowDimensions } from "react-native";
 import { useDispatch } from "react-redux";
@@ -25,7 +25,7 @@ export default function CommentItem({ comment }: Props) {
           <Text fontSize={"12"}>{comment.text}</Text>
           <HStack space={5}>
             <Text color={colors.dimTextColor} fontSize={"xs"}>
-              {comment.date}
+              {comment.date.relative}
             </Text>
             <Pressable onPress={() => dispatch(setReplyTo(comment))}>
               <Text color={colors.dimTextColor} fontSize={"xs"}>
@@ -66,4 +66,50 @@ export default function CommentItem({ comment }: Props) {
       )}
     </VStack>
   );
+}
+
+
+export const CommentItemSkeleton = () => {
+  const { width } = useWindowDimensions();
+
+  return <VStack w={width} space={1} mb={2}>
+    <HStack space={3}>
+      <Skeleton
+        mt={1}
+        w={"36px"}
+        h={"36px"}
+        rounded={"full"}
+        startColor={colors.skeletonStart}
+      />
+      <VStack space={"6px"} mt={"4px"}>
+        <Skeleton
+          w={"80px"}
+          h={2.5}
+          rounded={"full"}
+          startColor={colors.skeletonStart}
+        />
+        <Skeleton
+          w={"180px"}
+          h={2}
+          rounded={"full"}
+          startColor={colors.skeletonStart}
+        />
+        <HStack space={5}>
+          <Skeleton
+            w={"55px"}
+            h={2}
+            rounded={"sm"}
+            startColor={colors.skeletonDim}
+          />
+          <Skeleton
+            w={"50px"}
+            h={2}
+            rounded={"sm"}
+            startColor={colors.skeletonDim}
+          />
+        </HStack>
+      </VStack>
+    </HStack>
+
+  </VStack>
 }

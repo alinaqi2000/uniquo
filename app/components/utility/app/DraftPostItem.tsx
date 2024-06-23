@@ -22,6 +22,7 @@ import { useChannel } from "ably/react";
 import { styles } from "../../../config/styles";
 import { useSelector } from "react-redux";
 import { State } from "../../../store";
+import RequestService from "../../../services/RequestService";
 
 interface PressableProps extends IPressableProps {
   icon?: string;
@@ -42,6 +43,7 @@ export default function DraftPostItem({
 }: PostProps) {
   const [statePost, setStatePost] = useState(post)
   const { feed } = useSelector((state: State) => state.competitions);
+  const { token } = useSelector((state: State) => state.app);
 
   const { channel } = useChannel("post-updated", 'competition-' + competition.id + "-post-" + statePost.id, (message) => {
     if (message.data && message.data.post) {
@@ -60,6 +62,19 @@ export default function DraftPostItem({
       channel.unsubscribe();
     }
   }, [feed])
+  useEffect(() => {
+    getPost();
+  }, []);
+
+
+  const getPost = async () => {
+
+    const response = await RequestService.get("posts/single/" + statePost.id, token);
+
+    if (!response.error_type) {
+      setStatePost(response.data);
+    }
+  };
 
   return (
     <Pressable

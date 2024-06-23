@@ -14,6 +14,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import colors from "../../../config/colors";
 import { Pressable } from "react-native";
 import { Category } from "../../../models/Category";
+import UserAvatar from "../images/UserAvatar";
 
 interface PressableProps extends IPressableProps {
   icon?: string;
@@ -77,6 +78,22 @@ export default function CategoryItem(props: CatProps) {
         >
           {props.category.title}
         </Text>
+        {
+          props.category.suggested_by ?
+            <Box
+              h={50}
+              w={50}
+              style={{
+                position: "absolute",
+                transform: [{ translateX: 89 }, { translateY: 100 }],
+              }}              
+            >
+              <UserAvatar size={"xs"} uri={props.category.suggested_by.avatar} />
+            </Box>
+
+
+            : null
+        }
 
         <Box
           h={120}

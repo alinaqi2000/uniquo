@@ -18,10 +18,10 @@ export default function ReplyItem({ comment }: Props) {
         <UserAvatar mt={1} size={"xs"} uri={comment.by.avatar} />
         <VStack space={0.3}>
           <Text fontSize={"xs"}>{comment.by.username}</Text>
-          <Text fontSize={"10"}>{comment.text}</Text>
+          <Text fontSize={"11"}>{comment.text}</Text>
           <HStack space={5}>
-            <Text color={colors.dimTextColor} fontSize={"xs"}>
-              {comment.date}
+            <Text color={colors.dimTextColor} fontSize={10}>
+              {comment.date.relative}
             </Text>
           </HStack>
         </VStack>

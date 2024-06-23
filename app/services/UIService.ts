@@ -17,7 +17,7 @@ export default class UIService {
         } else {
             showMessage({
                 message: description,
-                description, type: "danger",
+                type: "danger",
                 duration: 5000,
                 position: "bottom",
             });
@@ -73,9 +73,9 @@ export default class UIService {
                 const announcementDateTime = moment(`${competition.announcement_at} ${competition.announcement_time}`, "MMM DD, YYYY HH:mm");
 
                 if (currentDateTime.isBefore(votingStartDateTime)) {
-                    return { title: "VOTING", sub_title: competition.voting_start_at }
+                    return { title: "VOTING ON", sub_title: competition.voting_start_at }
                 } else if (currentDateTime.isBetween(votingStartDateTime, announcementDateTime)) {
-                    return { title: "ANNOUNCEMENT", sub_title: competition.announcement_at }
+                    return { title: "ANNOUNCEMENT ON", sub_title: competition.announcement_at }
                 } else {
                     return { title: "ANNOUNCED", sub_title: competition.announcement_at }
                 }

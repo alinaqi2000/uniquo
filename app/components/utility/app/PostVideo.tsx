@@ -1,5 +1,5 @@
 import { View, Text, useWindowDimensions, Pressable } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Video, AVPlaybackStatus, ResizeMode } from "expo-av";
 import { Box, Button, Icon, Spinner } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -15,10 +15,10 @@ interface Props {
 }
 export default function PostVideo({ uri, index }: Props) {
   const { pauseAllVideos } = useSelector((state: State) => state.posts);
-  const video = React.useRef(null);
+  const video = useRef(null);
   const dispatch = useDispatch();
-  const [status, setStatus] = React.useState<any>({});
-  const [volume, setVolume] = React.useState(0);
+  const [status, setStatus] = useState<any>({});
+  const [volume, setVolume] = useState(0);
   const dimensions = useWindowDimensions();
   const [height, setHeight] = useState(360);
   const [width, setWidth] = useState(dimensions.width);
@@ -42,7 +42,7 @@ export default function PostVideo({ uri, index }: Props) {
       />
       <Video
         ref={video}
-        resizeMode={ResizeMode.COVER}
+        resizeMode={ResizeMode.CONTAIN}
         source={{
           uri,
         }}

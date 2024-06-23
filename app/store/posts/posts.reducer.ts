@@ -14,11 +14,15 @@ import {
   SET_VOTED_POSTS,
   PAUSE_ALL_VIDEOS,
   SET_WINNER_POSTS,
+  SET_PROFILE_FEED_POSTS,
+  SET_MY_VOTED_POSTS,
 } from "./posts.actions";
 
 export interface PostsState {
   feed: Post[];
+  profileFeed: Post[];
   my: Post[];
+  myVoted: Post[];
   voted: Post[];
   winner: Post[];
   reported: Post[];
@@ -29,8 +33,10 @@ export interface PostsState {
 }
 const initialState: PostsState = {
   feed: [],
+  profileFeed: [],
   voted: [],
   my: [],
+  myVoted: [],
   winner: [],
   reported: [],
   commentPost: null,
@@ -46,10 +52,20 @@ export default (state = initialState, action: PostsActions): PostsState => {
         ...state,
         feed: action.payload,
       };
+    case SET_PROFILE_FEED_POSTS:
+      return {
+        ...state,
+        profileFeed: action.payload,
+      };
     case SET_MY_POSTS:
       return {
         ...state,
         my: action.payload,
+      };
+    case SET_MY_VOTED_POSTS:
+      return {
+        ...state,
+        myVoted: action.payload,
       };
     case SET_WINNER_POSTS:
       return {

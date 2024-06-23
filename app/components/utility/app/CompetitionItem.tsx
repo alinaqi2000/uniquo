@@ -8,6 +8,8 @@ import { BaseCompetition } from "../../../models/constants";
 import UIService from "../../../services/UIService";
 import { styles } from "../../../config/styles";
 import Pluralize from "pluralize";
+import { useSelector } from "react-redux";
+import { State } from "../../../store";
 
 interface Props extends IPressableProps {
   competition: BaseCompetition;
@@ -16,6 +18,8 @@ interface Props extends IPressableProps {
 }
 
 export default function CompetitionItem(props: Props) {
+  const { user } = useSelector((state: State) => state.app);
+
   return (
     <View>
       <Pressable
@@ -24,16 +28,26 @@ export default function CompetitionItem(props: Props) {
             case "payment_verification_pending":
               return props.navigation.push("Detail&ProcessCompetitionPayment", {
                 competition: props.competition,
+                title: "Competition"
               });
 
             case "pending_publish":
               return props.navigation.push("Detail&ProcessCompetitionPayment", {
                 competition: props.competition,
+                title: "Competition"
               });
             case "participation_period":
-              return props.navigation.push("Detail&ParticipateCompetition", {
-                competition: props.competition,
-              });
+              if (user.username === props.competition.organizer.username) {
+                return props.navigation.push("Detail&ProcessCompetitionPayment", {
+                  competition: props.competition,
+                  title: "Competition"
+                });
+              } else {
+                return props.navigation.push("Detail&ParticipateCompetition", {
+                  competition: props.competition,
+                  title: "Competition"
+                });
+              }
             default:
               return props.navigation.push("PostsFeed", {
                 competition: props.competition,

@@ -47,14 +47,15 @@ export default class RequestService {
         break;
       case 200:
         break;
-      default:
+      default: apiConfig.apiURL
+        apiConfig.apiURL
         break;
     }
 
   }
   static async get(uri: string, token: string = "", params: any = {}): Promise<Response> {
     console.log('====================================');
-    console.log("URL:", apiConfig.apiURL);
+    console.log("URL:", apiConfig.apiURL + uri);
     console.log('====================================');
     var response: Response, headers = {};
     try {
@@ -76,7 +77,7 @@ export default class RequestService {
   }
   static async post(uri: string, data: any, token?: string, formikForm?: any): Promise<Response> {
     console.log('====================================');
-    console.log("URL:", apiConfig.apiURL);
+    console.log("URL:", apiConfig.apiURL + uri);
     console.log('====================================');
     var response: Response, headers = {};
     try {

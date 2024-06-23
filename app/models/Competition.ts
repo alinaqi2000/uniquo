@@ -31,7 +31,7 @@ export class Competition {
     public expired: boolean = false,
     public category: Category = new Category(),
     public organizer: User = new User(),
-    public winner: User | null = null,
+    public winners: User[] = [],
     public bgColor: string = "",
     public myDraftPosts: Post[] = [],
     public myPost: Post | null = null

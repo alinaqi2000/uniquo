@@ -12,11 +12,13 @@ import {
   SET_DRAFT_COMPETITION,
   SET_CATEGORIES,
   ADD_MY_COMPETITION,
+  SET_PROFILE_FEED_COMPETITIONS,
 } from "./competitions.actions";
 
 export interface CompetitionsState {
   categories: Category[];
   feed: Competition[];
+  profileFeed: Competition[];
   my: OrganizerCompetition[];
   recent: Competition[];
   draft: DraftCompetition;
@@ -24,6 +26,7 @@ export interface CompetitionsState {
 const initialState: CompetitionsState = {
   categories: [],
   feed: [],
+  profileFeed: [],
   draft: new DraftCompetition(),
   my: [],
   recent: [
@@ -48,6 +51,11 @@ export default (
       return {
         ...state,
         feed: action.payload.map((c) => ({ ...c, bgColor: UIService.randomCompetitionColor() })),
+      };
+    case SET_PROFILE_FEED_COMPETITIONS:
+      return {
+        ...state,
+        profileFeed: action.payload.map((c) => ({ ...c, bgColor: UIService.randomCompetitionColor() })),
       };
     case SET_DRAFT_COMPETITION:
       return {
