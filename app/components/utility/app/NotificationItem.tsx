@@ -12,7 +12,7 @@ export default function NotificationItem(props: Props) {
   return (
     <Pressable
       onPress={() => {
-
+        setTruncate(!truncate)
         // props.navigation.push("CompetitionsFeed", { title: "My Competitions" })
       }
       }
@@ -35,10 +35,11 @@ export default function NotificationItem(props: Props) {
         <HStack justifyContent={"space-between"} >
           <Text
             isTruncated={truncate}
-            onPress={() => setTruncate(!truncate)}
+            // onPress={() => setTruncate(!truncate)}
             color={colors.secondaryTextColor}
             fontSize={"xs"}
             z-zIndex={999}
+            w={"77%"}
           >
             {props.notification.description}
           </Text>

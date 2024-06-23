@@ -53,11 +53,19 @@ export default function HomeScreen({ navigation }) {
   const [firstName, lastName] = user.full_name.split(" ");
   const dispatch = useDispatch();
   const dimensions = useWindowDimensions();
+
   useEffect(() => {
     fetchNotifications();
     fetchCategories();
     fetchWinnerPosts();
+    
+    const interval = setInterval(() => {
+      fetchNotifications();
+    }, 30000);
 
+    return () => {
+      clearInterval(interval);
+    }
   }, []);
 
   const fetchNotifications = async () => {
