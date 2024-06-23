@@ -34,7 +34,7 @@ import DeviceInfo from "react-native-device-info";
 import { Platform } from "react-native";
 import UtilService from "../../services/UtilService";
 
-const ANDROID_ID = process.env.ANDROID_CLIENT_ID;
+const ANDROID_ID = process.env.EXPO_PUBLIC_ANDROID_CLIENT_ID;
 
 interface LoginForm {
   identity: string;

@@ -34,7 +34,7 @@ import RequestService from "../../services/RequestService";
 import UtilService from "../../services/UtilService";
 import * as Google from "expo-auth-session/providers/google";
 
-const ANDROID_ID = process.env.ANDROID_CLIENT_ID;
+const ANDROID_ID = process.env.EXPO_PUBLIC_ANDROID_CLIENT_ID;
 
 interface RegisterForm {
   full_name: string;

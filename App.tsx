@@ -25,7 +25,7 @@ import {
 
 export default function App() {
   const client = new Ably.Realtime({
-    key: process.env.ABLY_KEY,
+    key: process.env.EXPO_PUBLIC_ABLY_KEY,
   });
 
 
