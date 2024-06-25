@@ -271,9 +271,11 @@ export default function CreatePostScreen({ navigation, route }) {
     const response = await RequestService.get("posts/single/" + statePost.id, token);
 
     if (!response.error_type) {
+      if (statePost && pF.values.description !== statePost.description) {
+        pF.setFieldValue("description", response.data.description);
+      }
       putPostInCompetition(Post.fromData(response.data));
       setStatePost(response.data);
-      pF.setFieldValue("description", response.data.description);
     }
   };
 
